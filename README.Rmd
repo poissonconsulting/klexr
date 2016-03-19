@@ -1,0 +1,53 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+
+# Loch Rannoch Ferox Trout Mark-Recapture Analysis
+
+`klexr` is the companion R analysis package for Thorley et al.'s manuscript
+A Combined Tag-Telemetry Study to Estimate the Fishing and Natural Mortality
+of Large Piscivorous Bull Trout and Rainbow Trout in Kootenay Lake, British Columbia (2008-2014).
+
+## Installation
+
+To use the `klexr` package first install 
+[R](http://cran.r-project.org) (version 3.2.2 or greater) and
+[JAGS](http://mcmc-jags.sourceforge.net) (version 4.0.1 or greater).
+
+Then execute the following code at the R terminal:
+```
+#install.packages("devtools")
+devtools::install_github(paste("poissonconsulting", sep = "/", c(
+  "tulip@v0.0.13", "datalist@v0.5.0", "juggler@v0.1.5", "jaggernaut@v2.3.1",
+  "klexdatr", "lexr")))
+library(klexr)
+```
+## Replication
+
+To quickly replicate the results with *unreliable* model estimates use:
+```
+replicate_results("debug")
+```
+This option is useful for testing everything is installed correctly.
+
+To replicate the results with **reliable** model estimates use:
+```
+replicate_results("report")
+```
+
+## Information
+
+For more information type `?replicate_results` after loading the package.
