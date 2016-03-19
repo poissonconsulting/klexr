@@ -29,17 +29,17 @@ detect <- make_detect_data(lex, capture = capture, start_date = as.Date("2008-04
 saveRDS(detect, "results/detect.RDS")
 
 # plot Kootenay Lake by color-coded section
-png("results/Figure_2.png")
+png("results/Figure_2.png", width = 3, height = 6, units = "in", res = 900)
 plot_detect_section(detect)
 dev.off()
 
 # plot percent receiver coverage by color-coded section
-png("results/Figure_3.png")
+png("results/Figure_3.png", width = 4, height = 4, units = "in", res = 900)
 plot_detect_coverage(detect)
 dev.off()
 
 # plot detections by fish, species, date and color-coded section.
-png("results/Figure_4.png")
+png("results/Figure_4.png", width = 4, height = 4, units = "in", res = 900)
 plot_detect_overview(detect)
 dev.off()
 
