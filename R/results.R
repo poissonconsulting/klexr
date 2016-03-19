@@ -1,7 +1,7 @@
 #' Replicate Results
 #'
 #' Replicates the results by running the package demo. The results are saved
-#' to a folder klexr in the working directory.
+#' to a folder results in the working directory.
 #'
 #' By default (\code{mode = "debug"}) the analyses are run in debug mode
 #' which quickly generates non-convergent results (this is useful for testing
@@ -31,7 +31,7 @@ replicate_results <- function(mode = "debug", parallel = FALSE) {
   op <- jaggernaut::opts_jagr(mode = mode)
   on.exit(jaggernaut::opts_jagr(op), add = TRUE)
 
-  if(parallel) {
+  if (parallel) {
     nworkers <- foreach::getDoParWorkers()
     if (nworkers < jaggernaut::opts_jagr()$nchains) {
       on.exit(doParallel::stopImplicitCluster(), add = TRUE)
@@ -46,6 +46,6 @@ replicate_results <- function(mode = "debug", parallel = FALSE) {
 
   demo("klexr", ask = FALSE)
 
-  saveRDS(mode, "mode.RDS")
+  saveRDS(mode, "results/mode.RDS")
   invisible()
 }

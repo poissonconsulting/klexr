@@ -13,7 +13,7 @@ replicate_results(mode = "debug", parallel = FALSE)
 }
 \description{
 Replicates the results by running the package demo. The results are saved
-to a folder klexr in the working directory.
+to a folder results in the working directory.
 }
 \details{
 By default (\code{mode = "debug"}) the analyses are run in debug mode

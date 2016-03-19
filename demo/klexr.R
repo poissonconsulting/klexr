@@ -1,11 +1,11 @@
 # ensure required packages are loaded
-library(ggplot2)
-library(foreach)
-library(doParallel)
 library(magrittr)
 library(dplyr)
 library(lubridate)
 library(jaggernaut)
+library(foreach)
+library(doParallel)
+library(ggplot2)
 library(klexdatr)
 library(lexr)
 library(klexr)
@@ -13,7 +13,7 @@ library(klexr)
 # for additional information on a function enter: ?function_name
 
 # create directory to store results
-dir.create("klexr", showWarnings = FALSE, recursive = TRUE)
+dir.create("results", showWarnings = FALSE, recursive = TRUE)
 
 # load hourly detection dataset
 lex <- input_lex_data("klexdatr")
@@ -26,20 +26,20 @@ detect <- make_detect_data(lex, capture = capture, start_date = as.Date("2008-04
                            end_date = as.Date("2013-12-31"), hourly_interval = 6L)
 
 # save detection data
-saveRDS(detect, "klexr/detect.RDS")
+saveRDS(detect, "results/detect.RDS")
 
 # plot Kootenay Lake by color-coded section
-png("klexr/section.png")
+png("results/Figure_2.png")
 plot_detect_section(detect)
 dev.off()
 
 # plot percent receiver coverage by color-coded section
-png("klexr/coverage.png")
+png("results/Figure_3.png")
 plot_detect_coverage(detect)
 dev.off()
 
 # plot detections by fish, species, date and color-coded section.
-png("klexr/detections.png")
+png("results/Figure_4.png")
 plot_detect_overview(detect)
 dev.off()
 
