@@ -41,7 +41,7 @@ plot_detect_coverage(detect)
 dev.off()
 
 # plot detections by fish, species, date and color-coded section.
-png("results/Figure_4.png", width = 6, height = 6, units = "in", res = 900)
+png("results/Figure_4.png", width = 6, height = 8, units = "in", res = 900)
 plot_detect_overview(detect)
 dev.off()
 
