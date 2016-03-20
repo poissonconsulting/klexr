@@ -18,6 +18,10 @@ dir.create("results", showWarnings = FALSE, recursive = TRUE)
 # load hourly detection dataset
 lex <- input_lex_data("klexdatr")
 
+png("results/Figure_1.png", width = 3, height = 6, units = "in", res = 900)
+plot_section(lex)
+dev.off()
+
 # only select those individuals with a fork length of 500 mm or more
 capture <- filter(lex$capture, Length >= 500)
 
@@ -25,8 +29,6 @@ capture <- filter(lex$capture, Length >= 500)
 detect <- make_detect_data(lex, capture = capture, start_date = as.Date("2008-04-01"),
                            end_date = as.Date("2013-12-31"), hourly_interval = 6L)
 
-# save detection data
-saveRDS(detect, "results/detect.RDS")
 
 # plot Kootenay Lake by color-coded section
 png("results/Figure_2.png", width = 3, height = 6, units = "in", res = 900)
@@ -47,11 +49,13 @@ dev.off()
 bull_trout <- filter(detect$capture, Species == "Bull Trout")
 rainbow_trout <-  filter(detect$capture, Species == "Rainbow Trout")
 
-# group six hour intervals into monthly periods
+# group six hour intervals into three month periods
 interval_period <- mutate(detect$interval, Month = month(Month, label = TRUE),
                           Period = paste(Year, Month))$Period
 interval_period %<>% factor(levels = unique(.))
 
+# save detection data
+# saveRDS(detect, "results/detect.RDS")
 # # produce monthly bull trout data ready for analysis
 # bull_trout %<>% make_analysis_data(
 #   detect, capture = ., interval_period = interval_period, spawning = spawning_bt,

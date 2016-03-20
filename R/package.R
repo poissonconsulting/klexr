@@ -6,7 +6,5 @@
 #' @name klexr
 #' @import assertthat klexdatr
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom lubridate month
-#' @importFrom dplyr select
 #' @importFrom lexr input_lex_data
 NULL

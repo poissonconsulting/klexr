@@ -16,6 +16,7 @@ Depends:
     R (>= 3.1.0)
 Imports:
     assertthat,
+    broom,
     doParallel,
     dplyr,
     foreach,
@@ -24,5 +25,6 @@ Imports:
     klexdatr (>= 0.0.3),
     lexr (>= 0.0.3),
     lubridate,
-    magrittr
+    magrittr,
+    scales
 RoxygenNote: 5.0.1
