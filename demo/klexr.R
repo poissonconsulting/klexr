@@ -22,12 +22,15 @@ png("results/Figure_1.png", width = 3, height = 6, units = "in", res = 900)
 plot_section(lex)
 dev.off()
 
-# only select those individuals with a fork length of 500 mm or more
-capture <- filter(lex$capture, Length >= 500)
 
 # aggregate hourly receiver detection data into 6 hourly interval by section
-detect <- make_detect_data(lex, capture = capture, start_date = as.Date("2008-04-01"),
-                           end_date = as.Date("2013-12-31"), hourly_interval = 6L)
+# drop mortalities within 30 days of release
+# treat all recaptures as if harvested
+recapture <- lex$recapture
+recapture$Released <- FALSE
+detect <- make_detect_data(lex, recapture = recapture, start_date = as.Date("2008-04-01"),
+                           end_date = as.Date("2013-12-31"), hourly_interval = 6L,
+                           recovery_days = 30L)
 
 
 # plot Kootenay Lake by color-coded section
