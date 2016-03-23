@@ -32,13 +32,9 @@ dev.off()
 # aggregate hourly receiver detection data into 6 hourly interval by section
 # drop mortalities within 30 days of release
 # treat all recaptures as if harvested
-# only choose acoustically tagged captures
-capture <- lex$capture
-capture %<>% filter(DateTimeTagExpire > DateTimeCapture)
-
 recapture <- lex$recapture
 recapture$Released <- FALSE
-detect <- make_detect_data(lex, capture = capture, recapture = recapture,
+detect <- make_detect_data(lex, recapture = recapture,
                            start_date = as.Date("2008-04-01"),
                            end_date = as.Date("2013-12-31"), hourly_interval = 6L,
                            recovery_days = 30L)
