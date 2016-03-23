@@ -1,4 +1,10 @@
-# ensure required packages are loaded
+#' ---
+#' title: "Kootenay Lake Exploitation Analysis"
+#' author: "Joe Thorley"
+#' date: "March 23rd, 2015"
+#' ---
+#'
+#' ensure required packages are loaded
 library(magrittr)
 library(dplyr)
 library(lubridate)
@@ -10,12 +16,12 @@ library(klexdatr)
 library(lexr)
 library(klexr)
 
-# for additional information on a function enter: ?function_name
+#' for additional information on a function enter: ?function_name
 
-# create directory to store results
+#' create directory to store results
 dir.create("results", showWarnings = FALSE, recursive = TRUE)
 
-# load hourly detection dataset
+#' load hourly detection dataset
 lex <- input_lex_data("klexdatr")
 
 png("results/Figure_1.png", width = 3, height = 6, units = "in", res = 900)
