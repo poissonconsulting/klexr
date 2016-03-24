@@ -9,6 +9,9 @@ plot_section(data)
 \arguments{
 \item{data}{The \code{lex_data} object to plot.}
 }
+\value{
+A ggplot2 object.
+}
 \description{
 Maps and labels the sections for the klexdatr  \code{lex_data} object.
 }

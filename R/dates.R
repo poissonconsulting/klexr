@@ -1,3 +1,7 @@
+dayte <- function (x) {
+  as.Date(paste(2000, lubridate::month(x), lubridate::day(x), sep = "-"))
+}
+
 #' Season
 #'
 #' @param x A date-time object.

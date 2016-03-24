@@ -17,6 +17,7 @@ Depends:
 Imports:
     assertthat,
     broom,
+    datacheckr,
     doParallel,
     dplyr,
     foreach,
@@ -26,5 +27,8 @@ Imports:
     lexr (>= 0.0.3),
     lubridate,
     magrittr,
-    scales
+    plyr,
+    reshape2,
+    scales,
+    tidyr
 RoxygenNote: 5.0.1

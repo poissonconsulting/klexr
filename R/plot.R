@@ -24,6 +24,7 @@ waterbody <- function() {
 #' Maps and labels the sections for the klexdatr  \code{lex_data} object.
 #'
 #' @param data The \code{lex_data} object to plot.
+#' @return A ggplot2 object.
 #' @export
 plot_section <- function(data) {
   section <- data$section
@@ -46,4 +47,27 @@ plot_section <- function(data) {
     ggplot2::coord_equal() +
     ggplot2::scale_x_continuous(name = "Easting (km)", labels = scales::comma) +
     ggplot2::scale_y_continuous(name = "Northing (km)", labels = scales::comma)
+}
+
+#' Plot Spawning
+#'
+#' Plots the probability of spawning by length.
+#'
+#' @param data The data to plot.
+#' @return A ggplot2 object.
+#' @export
+plot_spawning <- function(data) {
+  data %<>% check_data3(values = list(
+    Length = c(500L, 800L),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), select = TRUE, min_row = 2)
+
+   ggplot2::ggplot(data = data, aes_(x = ~Length, y = ~estimate)) +
+   ggplot2::geom_line() +
+   ggplot2::geom_line(aes_(y = ~lower), linetype = "dotted") +
+   ggplot2::geom_line(aes_(y = ~upper), linetype = "dotted") +
+   ggplot2::scale_x_continuous(name = "Fork Length (mm)") +
+   ggplot2::scale_y_continuous(name = "Annual Spawning  Probability (%)", labels = scales::percent) +
+   ggplot2::expand_limits(y = c(0, 1))
 }

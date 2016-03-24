@@ -4,7 +4,7 @@
 #'
 #' @docType package
 #' @name klexr
-#' @import assertthat klexdatr
+#' @import assertthat datacheckr klexdatr
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom lexr input_lex_data
 NULL
