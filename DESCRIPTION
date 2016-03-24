@@ -23,6 +23,7 @@ Imports:
     foreach,
     ggplot2,
     jaggernaut,
+    juggler,
     klexdatr (>= 0.0.3),
     lexr (>= 0.0.3),
     lubridate,

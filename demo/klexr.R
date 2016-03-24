@@ -83,15 +83,15 @@ bull_trout %<>% analyse_mortality()
 #' print bull trout coefficient table
 summary(bull_trout)
 
-#' save bull trout traceplots
-pdf("results/traceplots_bt.pdf")
-plot(bull_trout)
+probs_bt <- predict_probs(bull_trout)
+png("results/Figure_5.png", width = 3, height = 3, units = "in", res = 900)
+plot_probs(probs_bt)
 dev.off()
 
 # predict and plot probability of bull trout spawning by length
 spawning_bt <- predict(bull_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-png("results/Figure_7.png", width = 3, height = 3, units = "in", res = 900)
+png("results/Figure_6.png", width = 3, height = 3, units = "in", res = 900)
 plot_spawning(spawning_bt)
 dev.off()
 
@@ -101,9 +101,9 @@ rainbow_trout %<>% analyse_mortality()
 #' print rainbow trout coefficient table
 summary(rainbow_trout)
 
-#' save rainbow trout traceplots
-pdf("results/traceplots_rb.pdf")
-plot(rainbow_trout)
+probs_rb <- predict_probs(rainbow_trout)
+png("results/Figure_7.png", width = 3, height = 3, units = "in", res = 900)
+plot_probs(probs_rb)
 dev.off()
 
 # predict and plot probability of rainbow trout spawning by length
@@ -113,7 +113,16 @@ png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
 plot_spawning(spawning_rb)
 dev.off()
 
-# probs_bt <- predict_probs(bull_trout)
-# png("results/Figure_5.png", width = 3, height = 3, units = "in", res = 900)
-# plot_probs(probs_bt)
-# dev.off()
+#' save bull trout traceplots
+pdf("results/traceplots_bt.pdf")
+plot(bull_trout)
+dev.off()
+
+#' save rainbow trout traceplots
+pdf("results/traceplots_rb.pdf")
+plot(rainbow_trout)
+dev.off()
+
+
+
+

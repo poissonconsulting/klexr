@@ -63,11 +63,33 @@ plot_spawning <- function(data) {
     lower = c(0, 1),
     upper = c(0, 1)), select = TRUE, min_row = 2)
 
-   ggplot2::ggplot(data = data, aes_(x = ~Length, y = ~estimate)) +
+   ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Length, y = ~estimate)) +
    ggplot2::geom_line() +
-   ggplot2::geom_line(aes_(y = ~lower), linetype = "dotted") +
-   ggplot2::geom_line(aes_(y = ~upper), linetype = "dotted") +
+   ggplot2::geom_line(ggplot2::aes_(y = ~lower), linetype = "dotted") +
+   ggplot2::geom_line(ggplot2::aes_(y = ~upper), linetype = "dotted") +
    ggplot2::scale_x_continuous(name = "Fork Length (mm)") +
    ggplot2::scale_y_continuous(name = "Annual Spawning  Probability (%)", labels = scales::percent) +
    ggplot2::expand_limits(y = c(0, 1))
 }
+
+#' Plot Spawning
+#'
+#' Plots the probability of spawning by length.
+#'
+#' @param data The data to plot.
+#' @return A ggplot2 object.
+#' @export
+plot_probs <- function(data) {
+  data %<>% check_data3(values = list(
+    Parameter = factor(1),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), select = TRUE, min_row = 4)
+
+   ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Parameter, y = ~estimate)) +
+   ggplot2::geom_pointrange(ggplot2::aes_(ymin = ~lower, ymax = ~upper)) +
+   ggplot2::scale_x_discrete(name = "Parameter") +
+   ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
+   ggplot2::expand_limits(y = c(0, 1))
+}
+

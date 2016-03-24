@@ -2,8 +2,10 @@
 
 export(analyse_mortality)
 export(mortality_model_code)
+export(plot_probs)
 export(plot_section)
 export(plot_spawning)
+export(predict_probs)
 export(replicate_results)
 export(season)
 export(spawning_bt)
