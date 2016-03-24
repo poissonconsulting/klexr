@@ -12,7 +12,7 @@ analyse_survival(data, niters = 10^5, mode = "current")
 \item{niters}{An integer of the minimum number of MCMC iterations to
 perform.}
 
-\item{A}{character element indicating the mode for the analysis.}
+\item{mode}{A character element indicating the mode for the analysis.}
 }
 \value{
 A jags_analysis object.

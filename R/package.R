@@ -4,7 +4,7 @@
 #'
 #' @docType package
 #' @name klexr
-#' @import assertthat datacheckr klexdatr
+#' @import assertthat datacheckr klexdatr foreach doParallel
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom lexr input_lex_data
 NULL

@@ -99,24 +99,24 @@ derived_code = "data{
                                           "Monitored", "Moved", "Reported", "Year", "Season",
                                           "Spawned", "SpawningPeriod", "Length")])
 
-               data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, value.var = "SpawningPeriod")
+               data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "SpawningPeriod")
                data$SpawningPeriod <- data$SpawningPeriod[1,]
 
-               data$Year <- reshape2::acast(df, Capture ~ Period, value.var = "Year")
+               data$Year <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Year")
                data$Year <- data$Year[1,]
 
-               data$Season <- reshape2::acast(df, Capture ~ Period, value.var = "Season")
+               data$Season <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Season")
                data$Season <- data$Season[1,]
 
-               data$PeriodCapture <- reshape2::acast(df, Capture ~ Period, value.var = "PeriodCapture")
-               data$PeriodCapture <- data$PeriodCapture[,1]
+               data$PeriodCapture <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "PeriodCapture")
+               data$PeriodCapture <- apply(data$PeriodCapture, MARGIN = 1, FUN = min, na.rm = TRUE)
 
-               data$Monitored <- reshape2::acast(df, Capture ~ Period, value.var = "Monitored")
-               data$Reported <- reshape2::acast(df, Capture ~ Period, value.var = "Reported")
-               data$Length <- reshape2::acast(df, Capture ~ Period, value.var = "Length")
-               data$Spawned <- reshape2::acast(df, Capture ~ Period, value.var = "Spawned")
+               data$Monitored <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Monitored")
+               data$Reported <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Reported")
+               data$Length <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Length")
+               data$Spawned <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Spawned")
 
-               data$Moved <- reshape2::acast(df, Capture ~ Period, value.var = "Moved")
+               data$Moved <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Moved")
 
                data$Capture <- NULL
                data$Period <- NULL
@@ -149,7 +149,7 @@ derived_code = "data{
 #' @param data A \code{analysis_data} object of the detection and recapture data to analyse.
 #' @param niters An integer of the minimum number of MCMC iterations to
 #' perform.
-#' @param A character element indicating the mode for the analysis.
+#' @param mode A character element indicating the mode for the analysis.
 #' @return A jags_analysis object.
 #' @export
 analyse_survival <- function(data, niters = 10^5, mode = "current") {
@@ -182,7 +182,8 @@ analyse_survival <- function(data, niters = 10^5, mode = "current") {
       Spawned = c(TRUE, NA)),
     key = c("Capture", "Period"), select = TRUE)
 
-  data$Season <- season(data$Month)
+  data %<>% dplyr::mutate_(.dots = list(Season = ~season(Month))) %>%
+   dplyr::filter_(~as.integer(Period) >= as.integer(PeriodCapture))
 
   jaggernaut::jags_analysis(survival_model(), data, niters = niters, mode = mode)
 }

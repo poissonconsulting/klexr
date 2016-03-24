@@ -75,14 +75,14 @@ rainbow_trout %<>% make_analysis_data(
 )
 
 #' convert to data frames ready for analysis
-bull_trout %<>% as.data.frame() # %>% filter(as.integer(Period) >= as.integer(PeriodCapture))
+bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
 
 # print JAGS model code for mortality model
 cat(survival_model_code())
 
 #' analyse bull trout data using mortality model
-bull_trout %<>% analyse_survival(mode = "debug")
+bull_trout %<>% analyse_survival()
 
 #' print bull trout coefficient table
 summary(bull_trout)

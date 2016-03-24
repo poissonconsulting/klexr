@@ -20,8 +20,8 @@ replicate_results <- function(mode = "debug", parallel = FALSE) {
   assert_that(is.string(mode))
   assert_that(is.flag(parallel))
 
-  require(foreach)
-  require(doParallel)
+  requireNamespace("foreach")
+  requireNamespace("doParallel")
 
   if (!mode %in% c("debug", "report", "paper"))
     stop("mode must be 'debug', 'report' or 'paper'")
