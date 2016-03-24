@@ -13,6 +13,6 @@ predict_probs(analysis)
 A data frame of probabilities
 }
 \description{
-Predicts
+Predicts the key probabilities.
 }
 

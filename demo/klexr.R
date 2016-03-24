@@ -1,15 +1,13 @@
 #' ---
 #' title: "Kootenay Lake Exploitation Analysis"
 #' author: "Joe Thorley"
-#' date: "March 23rd, 2015"
+#' date: "March 24th, 2015"
 #' ---
 #'
 #' ensure required packages are loaded
 library(magrittr)
 library(dplyr)
 library(jaggernaut)
-library(foreach)
-library(doParallel)
 library(ggplot2)
 library(scales)
 library(lexr)
@@ -29,13 +27,15 @@ plot_section(lex)
 dev.off()
 
 #' aggregate hourly receiver detection data into daily sectional detections
+#' keep captures with a fork length of 500 or more with a $100 reward tag
 #' drop mortalities within 30 days of release
-#' treat all recaptures as if harvested
+#' and treat all recaptures as if harvested
+capture <- filter(lex$capture, Length >= 500, Reward1 == 100)
 recapture <- lex$recapture
 recapture$Released <- FALSE
 detect <- make_detect_data(lex, recapture = recapture,
                            start_date = as.Date("2008-04-01"),
-                           end_date = as.Date("2013-12-31"), hourly_interval = 24L,
+                           end_date = as.Date("2013-12-31"),
                            recovery_days = 30L)
 
 #' plot Kootenay Lake by color-coded section
@@ -74,11 +74,15 @@ rainbow_trout %<>% make_analysis_data(
   spawning = spawning_rb, growth = growth_vb, linf = 1000, k = 0.19
 )
 
+#' convert to data frames ready for analysis
+bull_trout %<>% as.data.frame() # %>% filter(as.integer(Period) >= as.integer(PeriodCapture))
+rainbow_trout %<>% as.data.frame()
+
 # print JAGS model code for mortality model
-cat(mortality_model_code())
+cat(survival_model_code())
 
 #' analyse bull trout data using mortality model
-bull_trout %<>% analyse_mortality()
+bull_trout %<>% analyse_survival(mode = "debug")
 
 #' print bull trout coefficient table
 summary(bull_trout)
@@ -89,14 +93,14 @@ plot_probs(probs_bt)
 dev.off()
 
 # predict and plot probability of bull trout spawning by length
-spawning_bt <- predict(bull_trout, parm = "eSpawning",
+spawn_bt <- predict(bull_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
 png("results/Figure_6.png", width = 3, height = 3, units = "in", res = 900)
-plot_spawning(spawning_bt)
+plot_spawning(spawn_bt)
 dev.off()
 
 #' analyse rainbow trout data using mortality model
-rainbow_trout %<>% analyse_mortality()
+rainbow_trout %<>% analyse_survival()
 
 #' print rainbow trout coefficient table
 summary(rainbow_trout)
@@ -107,10 +111,10 @@ plot_probs(probs_rb)
 dev.off()
 
 # predict and plot probability of rainbow trout spawning by length
-spawning_rb <- predict(rainbow_trout, parm = "eSpawning",
+spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
 png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
-plot_spawning(spawning_rb)
+plot_spawning(spawn_rb)
 dev.off()
 
 #' save bull trout traceplots
@@ -123,6 +127,6 @@ pdf("results/traceplots_rb.pdf")
 plot(rainbow_trout)
 dev.off()
 
-
-
-
+# plot matrices moved, reported, spawned, length, monitored.
+# rename Angled as Reported.
+# matrices need

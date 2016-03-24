@@ -21,7 +21,7 @@ waterbody <- function() {
 
 #' Plot Section
 #'
-#' Maps and labels the sections for the klexdatr  \code{lex_data} object.
+#' Maps and labels the sections for the klexdatr \code{lex_data} object.
 #'
 #' @param data The \code{lex_data} object to plot.
 #' @return A ggplot2 object.
@@ -72,9 +72,9 @@ plot_spawning <- function(data) {
    ggplot2::expand_limits(y = c(0, 1))
 }
 
-#' Plot Spawning
+#' Plot Probabilities
 #'
-#' Plots the probability of spawning by length.
+#' Plots the key probabilities.
 #'
 #' @param data The data to plot.
 #' @return A ggplot2 object.
@@ -92,4 +92,3 @@ plot_probs <- function(data) {
    ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
    ggplot2::expand_limits(y = c(0, 1))
 }
-

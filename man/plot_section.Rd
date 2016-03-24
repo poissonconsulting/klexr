@@ -13,6 +13,6 @@ plot_section(data)
 A ggplot2 object.
 }
 \description{
-Maps and labels the sections for the klexdatr  \code{lex_data} object.
+Maps and labels the sections for the klexdatr \code{lex_data} object.
 }
 

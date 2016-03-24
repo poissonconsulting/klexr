@@ -15,10 +15,10 @@ knitr::opts_chunk$set(
 ```
 
 
-# Loch Rannoch Ferox Trout Mark-Recapture Analysis
+# Kootenay Lake Exploitation Analysis
 
 `klexr` is the companion R analysis package for Thorley et al.'s manuscript
-A Combined Tag-Telemetry Study to Estimate the Fishing and Natural Mortality
+The Fishing and Natural Mortality
 of Large Piscivorous Bull Trout and Rainbow Trout in Kootenay Lake, British Columbia (2008-2014).
 
 ## Installation

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_probs}
 \alias{plot_probs}
-\title{Plot Spawning}
+\title{Plot Probabilities}
 \usage{
 plot_probs(data)
 }
@@ -13,6 +13,6 @@ plot_probs(data)
 A ggplot2 object.
 }
 \description{
-Plots the probability of spawning by length.
+Plots the key probabilities.
 }
 
