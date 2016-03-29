@@ -1,7 +1,7 @@
 #' ---
 #' title: "Kootenay Lake Exploitation Analysis"
 #' author: "Joe Thorley"
-#' date: "March 24th, 2015"
+#' date: "March 28th, 2015"
 #' ---
 #'
 #' ensure required packages are loaded
@@ -12,6 +12,8 @@ library(ggplot2)
 library(scales)
 library(lexr)
 library(klexr)
+
+opts_jagr(mode = "debug")
 
 #' for additional information on a function enter: ?function_name
 
@@ -33,7 +35,7 @@ dev.off()
 capture <- filter(lex$capture, Length >= 500, Reward1 == 100)
 recapture <- lex$recapture
 recapture$Released <- FALSE
-detect <- make_detect_data(lex, recapture = recapture,
+detect <- make_detect_data(lex, capture = capture, recapture = recapture,
                            start_date = as.Date("2008-04-01"),
                            end_date = as.Date("2013-12-31"),
                            recovery_days = 30L)
@@ -65,7 +67,7 @@ interval_period %<>% factor(levels = unique(.))
 #' aggregate bull trout daily detections into monthly detections
 bull_trout %<>% make_analysis_data(
   detect, capture = ., interval_period = interval_period,
-  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.19
+  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.10
 )
 
 #' aggregate rainbow trout daily detections into monthly detections
@@ -78,42 +80,72 @@ rainbow_trout %<>% make_analysis_data(
 bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
 
+#' add season column
+bull_trout$Season <- season(bull_trout$Month)
+rainbow_trout$Season <- season(rainbow_trout$Month)
+
+#' plot analysis data for bull trout
+png("results/Figure_5.png", width = 6, height = 6, units = "in", res = 900)
+plot_analysis_data(bull_trout)
+dev.off()
+
+#' plot analysis lengths for bull trout
+png("results/Figure_6.png", width = 3, height = 3, units = "in", res = 900)
+plot_analysis_length(bull_trout)
+dev.off()
+
+#' plot analysis data for rainbow trout
+png("results/Figure_7.png", width = 6, height = 8, units = "in", res = 900)
+plot_analysis_data(rainbow_trout)
+dev.off()
+
+#' plot analysis lengths for rainbow trout
+png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
+plot_analysis_length(bull_trout)
+dev.off()
+
 # print JAGS model code for mortality model
 cat(survival_model_code())
 
 #' analyse bull trout data using mortality model
 bull_trout %<>% analyse_survival()
 
+#' save rainbow trout analysis to results
+saveRDS(bull_trout, "results/bull_trout.rds")
+
 #' print bull trout coefficient table
 summary(bull_trout)
 
 probs_bt <- predict_probs(bull_trout)
-png("results/Figure_5.png", width = 3, height = 3, units = "in", res = 900)
+png("results/Figure_9.png", width = 3, height = 3, units = "in", res = 900)
 plot_probs(probs_bt)
 dev.off()
 
 # predict and plot probability of bull trout spawning by length
 spawn_bt <- predict(bull_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-png("results/Figure_6.png", width = 3, height = 3, units = "in", res = 900)
+png("results/Figure10.png", width = 3, height = 3, units = "in", res = 900)
 plot_spawning(spawn_bt)
 dev.off()
 
 #' analyse rainbow trout data using mortality model
 rainbow_trout %<>% analyse_survival()
 
+#' save rainbow trout analysis to results
+saveRDS(rainbow_trout, "results/rainbow_trout.rds")
+
 #' print rainbow trout coefficient table
 summary(rainbow_trout)
 
 probs_rb <- predict_probs(rainbow_trout)
-png("results/Figure_7.png", width = 3, height = 3, units = "in", res = 900)
+png("results/Figure11.png", width = 3, height = 3, units = "in", res = 900)
 plot_probs(probs_rb)
 dev.off()
 
 # predict and plot probability of rainbow trout spawning by length
 spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
+png("results/Figure12.png", width = 3, height = 3, units = "in", res = 900)
 plot_spawning(spawn_rb)
 dev.off()
 
@@ -127,6 +159,6 @@ pdf("results/traceplots_rb.pdf")
 plot(rainbow_trout)
 dev.off()
 
-# plot matrices moved, reported, spawned, length, monitored.
-# rename Angled as Reported.
-# matrices need
+#' save list of summary information
+summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
+saveRDS(summary, "results/summary.rds")

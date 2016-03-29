@@ -49,6 +49,6 @@ replicate_results <- function(mode = "debug", parallel = FALSE) {
 
   demo("klexr", ask = FALSE)
 
-  saveRDS(mode, "results/mode.RDS")
+  saveRDS(mode, "results/mode.rds")
   invisible()
 }

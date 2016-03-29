@@ -179,11 +179,9 @@ analyse_survival <- function(data, niters = 10^5, mode = "current") {
       Removed = c(TRUE, NA),
       Released = c(TRUE, NA),
       SpawningPeriod = TRUE,
-      Spawned = c(TRUE, NA)),
+      Spawned = c(TRUE, NA),
+      Season = factor(1)),
     key = c("Capture", "Period"), select = TRUE)
-
-  data %<>% dplyr::mutate_(.dots = list(Season = ~season(Month))) %>%
-   dplyr::filter_(~as.integer(Period) >= as.integer(PeriodCapture))
 
   jaggernaut::jags_analysis(survival_model(), data, niters = niters, mode = mode)
 }
