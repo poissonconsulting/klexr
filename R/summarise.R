@@ -1,4 +1,6 @@
 tags2 <- function (x) {
+
+  x$Year <- lubridate::year(x$DateTimeCapture)
   tags_bt <- dplyr::group_by_(x, ~Year, ~Reward2) %>%
     dplyr::summarise_(n = ~n()) %>% dplyr::ungroup()
 
@@ -31,10 +33,13 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
 
   sections <- detect$section@data
   stations <- dplyr::inner_join(lex$station, sections, by = "Section")
-  captures <- filter(lex$capture, Length >= 500, Reward1 == 100)
+  captures_all <- dplyr::filter_(lex$capture, ~Length >= 500, ~Reward1 == 100)
 
-  lightest <- dplyr::filter_(captures, ~!is.na(Weight))
-  lightest <- captures[which.min(lightest$Weight),]
+  captures_all_bt <- dplyr::filter_(captures_all, ~Species == "Bull Trout")
+  captures_all_rb <- dplyr::filter_(captures_all, ~Species == "Rainbow Trout")
+
+  lightest <- dplyr::filter_(captures_all, ~!is.na(Weight))
+  lightest <- captures_all[which.min(lightest$Weight),]
 
   captures_bt <- jaggernaut::dataset(bull_trout) %>%
     dplyr::filter_(~Period == PeriodCapture)
@@ -67,17 +72,17 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$LightestWeight <- lightest$Weight
   results$LightestSpecies <- lightest$Species %>% as.character()
 
-  results$BullTroutCapture <- nrow(captures[captures$Species == "Bull Trout",])
-  results$RainbowTroutCapture <- nrow(captures[captures$Species == "Rainbow Trout",])
+  results$BullTroutCapture <- nrow(captures_all_bt)
+  results$RainbowTroutCapture <- nrow(captures_all_rb)
 
-  results$BullTroutRewardOnly <- nrow(captures[captures$Species == "Bull Trout" & captures$DateTimeCapture == captures$DateTimeTagExpire,])
-  results$RainbowTroutRewardOnly <- nrow(captures[captures$Species == "Rainbow Trout" & captures$DateTimeCapture == captures$DateTimeTagExpire,])
+  results$BullTroutRewardOnly <- nrow(captures_all_bt[captures_all_bt$DateTimeCapture == captures_all_bt$DateTimeTagExpire,])
+  results$RainbowTroutRewardOnly <- nrow(captures_all_rb[captures_all_rb$DateTimeCapture == captures_all_rb$DateTimeTagExpire,])
 
   results$BullTroutSurvive <- nlevels(captures_bt$Capture)
   results$RainbowTroutSurvive <- nlevels(captures_rb$Capture)
 
-  results$tags_bt <- tags2(captures_bt)
-  results$tags_rb <- tags2(captures_rb)
+  results$tags_bt <- tags2(captures_all_bt)
+  results$tags_rb <- tags2(captures_all_rb)
 
   results
 }
