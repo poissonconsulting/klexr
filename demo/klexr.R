@@ -1,7 +1,7 @@
 #' ---
 #' title: "Kootenay Lake Exploitation Analysis"
 #' author: "Joe Thorley"
-#' date: "March 28th, 2015"
+#' date: "March 30th, 2015"
 #' ---
 #'
 #' ensure required packages are loaded

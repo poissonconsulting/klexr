@@ -28,8 +28,8 @@ spawning_bt_year <- function(detection, spawning_window) {
 spawning_bt <- function(detection, period) {
 
   period %<>% dplyr::mutate_(.dots = list(Year = ~lubridate::year(Date)),
-                             Dayte = ~dayte(Date),
-                             EndDayte = ~Dayte + Days)
+                             EndDayte = ~dayte(Date + Days - 1),
+                             Dayte = ~dayte(Date))
 
   period %<>% dplyr::select_(~Period, ~Dayte, ~EndDayte, ~Year)
 
@@ -97,9 +97,8 @@ spawning_rb_year <- function(detection, spawning_window) {
 spawning_rb <- function(detection, period) {
 
   period %<>% dplyr::mutate_(.dots = list(Year = ~lubridate::year(Date)),
-                             Dayte = ~dayte(Date),
-                             EndDayte = ~Dayte + Days)
-
+                             EndDayte = ~dayte(Date + Days - 1),
+                             Dayte = ~dayte(Date))
   period %<>% dplyr::select_(~Period, ~Dayte, ~EndDayte, ~Year)
 
   spawning_window <- as.Date(paste0("2000-", c("04-01", "05-31")))
