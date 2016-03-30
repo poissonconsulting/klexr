@@ -89,14 +89,14 @@ png("results/Figure_5.png", width = 6, height = 6, units = "in", res = 900)
 plot_analysis_data(bull_trout)
 dev.off()
 
-#' plot analysis lengths for bull trout
-png("results/Figure_6.png", width = 3, height = 3, units = "in", res = 900)
-plot_analysis_length(bull_trout)
+#' plot analysis data for rainbow trout
+png("results/Figure_6.png", width = 6, height = 8, units = "in", res = 900)
+plot_analysis_data(rainbow_trout)
 dev.off()
 
-#' plot analysis data for rainbow trout
-png("results/Figure_7.png", width = 6, height = 8, units = "in", res = 900)
-plot_analysis_data(rainbow_trout)
+#' plot analysis lengths for bull trout
+png("results/Figure_7.png", width = 3, height = 3, units = "in", res = 900)
+plot_analysis_length(bull_trout)
 dev.off()
 
 #' plot analysis lengths for rainbow trout

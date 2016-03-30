@@ -51,7 +51,7 @@ survival_model_code <- function(comments = TRUE) {
       logit(eReported[i,j]) <- bReported
       eReportedSeasonal[i,j] <- 1-(1-eReported[i,j])^(1/nSeason)
       Reported[i,j] ~ dbern(eAlive[i,j] * eReportedSeasonal[i,j])
-      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * max(Spawned[i,j],Spawned[i,j-1])
+      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * Spawned[i,j]
       eMortalitySeasonal[i,j] <- 1-(1-eMortality[i,j])^(1/nSeason)
     }
   }
