@@ -1,3 +1,17 @@
+tags2 <- function (x) {
+  tags_bt <- dplyr::group_by_(x, ~Year, ~Reward2) %>%
+    dplyr::summarise_(n = ~n()) %>% dplyr::ungroup()
+
+  tags_bt$Year %<>% factor(levels = 2008:2013)
+  tags_bt$Reward2 %<>% factor(levels = c("100", "10", "0", "No"))
+  tags_bt$Reward2[is.na(tags_bt$Reward2)] <- "No"
+  levels(tags_bt$Reward2) <- list("$100" = "100", "$10" = "10", "$0" = "0", "No" = "No")
+
+  tags_bt %<>% tidyr::spread_("Reward2", "n", drop = FALSE)
+  tags_bt[is.na(tags_bt)] <- 0
+  tags_bt
+}
+
 #' Summarise Results
 #'
 #' Summarises key results as a named list.
@@ -22,16 +36,17 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   lightest <- dplyr::filter_(captures, ~!is.na(Weight))
   lightest <- captures[which.min(lightest$Weight),]
 
-  recaptures_all <- detect$recapture
-  recaptures_all %<>% dplyr::inner_join(detect$capture, by = "Capture")
+  captures_bt <- jaggernaut::dataset(bull_trout) %>%
+    dplyr::filter_(~Period == PeriodCapture)
+
+  captures_rb <- jaggernaut::dataset(rainbow_trout) %>%
+    dplyr::filter_(~Period == PeriodCapture)
 
   recaptures_bt <- jaggernaut::dataset(bull_trout) %>%
     dplyr::filter_(~Reported)
 
   recaptures_rb <- jaggernaut::dataset(rainbow_trout) %>%
     dplyr::filter_(~Reported)
-
-  xx <<- recaptures_rb
 
   results <- list()
   results$nSections <- nrow(sections)
@@ -58,14 +73,11 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$BullTroutRewardOnly <- nrow(captures[captures$Species == "Bull Trout" & captures$DateTimeCapture == captures$DateTimeTagExpire,])
   results$RainbowTroutRewardOnly <- nrow(captures[captures$Species == "Rainbow Trout" & captures$DateTimeCapture == captures$DateTimeTagExpire,])
 
-  results$BullTroutSurvive <- nlevels(jaggernaut::dataset(bull_trout)$Capture)
-  results$RainbowTroutSurvive <- nlevels(jaggernaut::dataset(rainbow_trout)$Capture)
+  results$BullTroutSurvive <- nlevels(captures_bt$Capture)
+  results$RainbowTroutSurvive <- nlevels(captures_rb$Capture)
 
-#  results$BullTroutAllRecapture <- nrow(recaptures_all[recaptures_all$Species == "Bull Trout",])
-#  results$RainbowAllTroutRecapture <- nrow(recaptures_all[recaptures_all$Species == "Rainbow Trout",])
-
-#  results$BullTroutRecapture <- nrow(recaptures_bt)
-#  results$RainbowTroutRecapture <- nrow(recaptures_rb)
+  results$tags_bt <- tags2(captures_bt)
+  results$tags_rb <- tags2(captures_rb)
 
   results
 }
