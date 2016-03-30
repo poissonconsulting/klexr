@@ -13,8 +13,6 @@ library(scales)
 library(lexr)
 library(klexr)
 
-opts_jagr(mode = "debug")
-
 #' for additional information on a function enter: ?function_name
 
 #' create directory to store results
