@@ -66,10 +66,15 @@ derived_code = "data{
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
     logit(eMoving[i]) <- bMoving
     logit(eReported[i]) <- bReported
-    logit(eMortality[i]) <- bMortality + bMortalitySpawning * Spawned[i]
+    logit(eMortality[i]) <- bMortality
+    eMortalitySeason[i] <- 1-(1-eMortality[i])^(1/nSeason)
+    logit(eMortalitySpawning[i]) <- bMortality + bMortalitySpawning
+    eMortalitySpawningSeason[i] <- 1-(1-eMortalitySpawning[i])^(1/nSeason)
+    eMortalitySpawningAnnual[i] <- 1-(1-eMortalitySeason[i])^(nSeason-1) * (1-eMortalitySpawningSeason[i])
   }
 }",
              gen_inits = function(data) {
+
                inits <- list()
 
                undefined <- array(TRUE, dim = dim(data$Moved))
@@ -99,24 +104,25 @@ derived_code = "data{
                                           "Monitored", "Moved", "Reported", "Year", "Season",
                                           "Spawned", "SpawningPeriod", "Length")])
 
-               data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "SpawningPeriod")
+               data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, value.var = "SpawningPeriod")
                data$SpawningPeriod <- data$SpawningPeriod[1,]
 
-               data$Year <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Year")
+               data$Year <- reshape2::acast(df, Capture ~ Period, value.var = "Year")
                data$Year <- data$Year[1,]
 
-               data$Season <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Season")
+               data$Season <- reshape2::acast(df, Capture ~ Period, value.var = "Season")
                data$Season <- data$Season[1,]
 
-               data$PeriodCapture <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "PeriodCapture")
+               data$PeriodCapture <- reshape2::acast(df, Capture ~ Period, value.var = "PeriodCapture")
                data$PeriodCapture <- apply(data$PeriodCapture, MARGIN = 1, FUN = min, na.rm = TRUE)
 
-               data$Monitored <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Monitored")
-               data$Reported <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Reported")
-               data$Length <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Length")
-               data$Spawned <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Spawned")
+               data$Monitored <- reshape2::acast(df, Capture ~ Period, value.var = "Monitored")
 
-               data$Moved <- reshape2::acast(df, Capture ~ Period, drop = FALSE, fill = NA, value.var = "Moved")
+               data$Reported <- reshape2::acast(df, Capture ~ Period, value.var = "Reported")
+               data$Length <- reshape2::acast(df, Capture ~ Period, value.var = "Length")
+               data$Spawned <- reshape2::acast(df, Capture ~ Period, value.var = "Spawned")
+
+               data$Moved <- reshape2::acast(df, Capture ~ Period, value.var = "Moved")
 
                data$Capture <- NULL
                data$Period <- NULL

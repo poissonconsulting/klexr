@@ -101,7 +101,7 @@ dev.off()
 
 #' plot analysis lengths for rainbow trout
 png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
-plot_analysis_length(bull_trout)
+plot_analysis_length(rainbow_trout)
 dev.off()
 
 # print JAGS model code for mortality model

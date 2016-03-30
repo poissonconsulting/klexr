@@ -117,6 +117,7 @@ plot_analysis_length <- function(data, years = 2008:2013) {
 
   data$Year %<>% factor(, levels = years)
 
+  data %<>% dplyr::filter_(~as.integer(Period) >= as.integer(PeriodCapture))
   capture <- dplyr::filter_(data, ~Period == PeriodCapture)
   recapture <- dplyr::filter_(data, ~Reported)
 
@@ -172,5 +173,6 @@ plot_probs <- function(data) {
     ggplot2::geom_pointrange(ggplot2::aes_(ymin = ~lower, ymax = ~upper)) +
     ggplot2::scale_x_discrete(name = "Parameter") +
     ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
-    ggplot2::expand_limits(y = c(0, 1))
+    ggplot2::expand_limits(y = c(0, 1)) +
+    ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 }
