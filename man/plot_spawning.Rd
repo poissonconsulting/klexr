@@ -4,7 +4,7 @@
 \alias{plot_spawning}
 \title{Plot Spawning}
 \usage{
-plot_spawning(data)
+plot_spawning(data1, data2)
 }
 \arguments{
 \item{data}{The data to plot.}

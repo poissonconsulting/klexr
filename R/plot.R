@@ -139,19 +139,35 @@ plot_analysis_length <- function(data, years = 2008:2013) {
 #' @param data The data to plot.
 #' @return A ggplot2 object.
 #' @export
-plot_spawning <- function(data) {
-  data %<>% check_data3(values = list(
+plot_spawning <- function(data1, data2) {
+  data1 %<>% check_data3(values = list(
+    Species = factor(1),
     Length = c(500L, 800L),
     estimate = c(0, 1),
     lower = c(0, 1),
     upper = c(0, 1)), select = TRUE, min_row = 2)
 
-  ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Length, y = ~estimate)) +
+  data2 %<>% check_data3(values = list(
+    Species = factor(1),
+    Length = c(500L, 800L),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), select = TRUE, min_row = 2)
+
+  data1$Species %<>% as.character()
+  data2$Species %<>% as.character()
+
+  data <- dplyr::bind_rows(data1, data2)
+  data$Species %<>% factor(levels = c(data1$Species[1], data2$Species[1]))
+
+  ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Length, y = ~estimate,
+                                             group = ~Species, color = ~Species)) +
     ggplot2::geom_line() +
     ggplot2::geom_line(ggplot2::aes_(y = ~lower), linetype = "dotted") +
     ggplot2::geom_line(ggplot2::aes_(y = ~upper), linetype = "dotted") +
     ggplot2::scale_x_continuous(name = "Fork Length (mm)") +
     ggplot2::scale_y_continuous(name = "Annual Spawning  Probability (%)", labels = scales::percent) +
+    ggplot2::scale_color_manual(values = c("black", "red")) +
     ggplot2::expand_limits(y = c(0, 1))
 }
 
@@ -162,17 +178,33 @@ plot_spawning <- function(data) {
 #' @param data The data to plot.
 #' @return A ggplot2 object.
 #' @export
-plot_probs <- function(data) {
-  data %<>% check_data3(values = list(
+plot_probs <- function(data1, data2) {
+  data1 %<>% check_data3(values = list(
+    Species = factor(1),
     Parameter = factor(1),
     estimate = c(0, 1),
     lower = c(0, 1),
     upper = c(0, 1)), select = TRUE, min_row = 4)
 
+  data2 %<>% check_data3(values = list(
+    Species = factor(1),
+    Parameter = factor(1),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), select = TRUE, min_row = 4)
+
+  data1$Species %<>% as.character()
+  data2$Species %<>% as.character()
+
+  data <- dplyr::bind_rows(data1, data2)
+  data$Species %<>% factor(levels = c(data1$Species[1], data2$Species[1]))
+
   ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Parameter, y = ~estimate)) +
-    ggplot2::geom_pointrange(ggplot2::aes_(ymin = ~lower, ymax = ~upper)) +
+    ggplot2::geom_pointrange(ggplot2::aes_(ymin = ~lower, ymax = ~upper, color = ~Species),
+                             position = ggplot2::position_dodge(width = 0.25)) +
     ggplot2::scale_x_discrete(name = "Parameter") +
     ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
+    ggplot2::scale_color_manual(values = c("black", "red")) +
     ggplot2::expand_limits(y = c(0, 1)) +
     ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 }

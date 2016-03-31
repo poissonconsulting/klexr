@@ -4,7 +4,7 @@
 \alias{plot_probs}
 \title{Plot Probabilities}
 \usage{
-plot_probs(data)
+plot_probs(data1, data2)
 }
 \arguments{
 \item{data}{The data to plot.}
