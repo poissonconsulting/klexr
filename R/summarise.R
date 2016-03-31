@@ -84,6 +84,18 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$BullTroutRecaptures <- nrow(recaptures_bt)
   results$RainbowTroutRecaptures <- nrow(recaptures_rb)
 
+  recaptures_bt %<>% dplyr::filter_(~Reward1 == 100, ~Reward2 == 10)
+  recaptures_rb %<>% dplyr::filter_(~Reward1 == 100, ~Reward2 == 10)
+
+  recaptures_bt$TBarTag1 %<>% factor(levels = c(TRUE, FALSE))
+  recaptures_bt$TBarTag2 %<>% factor(levels = c(TRUE, FALSE))
+
+  recaptures_rb$TBarTag1 %<>% factor(levels = c(TRUE, FALSE))
+  recaptures_rb$TBarTag2 %<>% factor(levels = c(TRUE, FALSE))
+
+  results$recap_bt <- table(recaptures_bt$TBarTag1, recaptures_bt$TBarTag2, dnn = c("$100", "$10"))
+  results$recap_rb <- table(recaptures_rb$TBarTag1, recaptures_rb$TBarTag2, dnn = c("$100", "$10"))
+
   results$tags_bt <- tags2(captures_all_bt)
   results$tags_rb <- tags2(captures_all_rb)
 
