@@ -65,7 +65,7 @@ interval_period %<>% factor(levels = unique(.))
 #' aggregate bull trout daily detections into monthly detections
 bull_trout %<>% make_analysis_data(
   detect, capture = ., interval_period = interval_period,
-  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.10
+  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.14
 )
 
 #' aggregate rainbow trout daily detections into monthly detections
