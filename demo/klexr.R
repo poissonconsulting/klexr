@@ -93,12 +93,12 @@ plot_analysis_data(rainbow_trout)
 dev.off()
 
 #' plot analysis lengths for bull trout
-png("results/Figure_7.png", width = 3, height = 3, units = "in", res = 900)
+png("results/FigureS01.png", width = 3, height = 3, units = "in", res = 900)
 plot_analysis_length(bull_trout)
 dev.off()
 
 #' plot analysis lengths for rainbow trout
-png("results/Figure_8.png", width = 3, height = 3, units = "in", res = 900)
+png("results/FigureS02.png", width = 3, height = 3, units = "in", res = 900)
 plot_analysis_length(rainbow_trout)
 dev.off()
 
@@ -136,7 +136,7 @@ dev.off()
 # predict and plot key parameters
 probs_bt <- predict_probs(bull_trout)
 probs_rb <- predict_probs(rainbow_trout)
-png("results/Figure_9.png", width = 4, height = 4, units = "in", res = 900)
+png("results/Figure_7.png", width = 4, height = 4, units = "in", res = 900)
 plot_probs(probs_bt, probs_rb)
 dev.off()
 
@@ -145,10 +145,11 @@ spawn_bt <- predict(bull_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
 spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-png("results/Figure10.png", width = 4, height = 3, units = "in", res = 900)
+png("results/Figure_8.png", width = 4, height = 3, units = "in", res = 900)
 plot_spawning(spawn_bt, spawn_rb)
 dev.off()
 
 #' save list of summary information
 summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
+summary$probs <- plot_probs(probs_bt, probs_rb)$data
 saveRDS(summary, "results/summary.rds")
