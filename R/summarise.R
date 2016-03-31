@@ -81,6 +81,9 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$BullTroutSurvive <- nlevels(captures_bt$Capture)
   results$RainbowTroutSurvive <- nlevels(captures_rb$Capture)
 
+  results$BullTroutRecaptures <- nrow(recaptures_bt)
+  results$RainbowTroutRecaptures <- nrow(recaptures_rb)
+
   results$tags_bt <- tags2(captures_all_bt)
   results$tags_rb <- tags2(captures_all_rb)
 
