@@ -136,7 +136,7 @@ dev.off()
 # predict and plot key parameters
 probs_bt <- predict_probs(bull_trout)
 probs_rb <- predict_probs(rainbow_trout)
-png("results/Figure_9.png", width = 4, height = 3, units = "in", res = 900)
+png("results/Figure_9.png", width = 4, height = 4, units = "in", res = 900)
 plot_probs(probs_bt, probs_rb)
 dev.off()
 

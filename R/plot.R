@@ -91,8 +91,8 @@ plot_analysis_data <- function(data, years = 2008:2013) {
     ggplot2::scale_x_discrete(name = "Season", expand = c(0, 0.5)) +
     ggplot2::scale_y_discrete(name = "Capture", expand = c(0, 0.5)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5)) +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(size = ggplot2::rel(0.6))) +
     ggplot2::theme(panel.margin = ggplot2::unit(0, "in"))
-
 }
 
 drop_post_recaps <- function (x) {
