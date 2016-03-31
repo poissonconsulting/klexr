@@ -22,7 +22,7 @@ Imports:
     dplyr,
     foreach,
     ggplot2,
-    jaggernaut,
+    jaggernaut (>= 2.3.2),
     juggler,
     klexdatr (>= 0.0.5.9000),
     lexr (>= 0.0.4.9004),
