@@ -1,3 +1,14 @@
+#' Subtract 600 Divide 100
+#'
+#' @param x The numeric vector to transform.
+#' @export
+#' @examples
+#' subtract600divide100(c(400,500,600,750))
+subtract600divide100 <- function(x) {
+  x %<>% magrittr::subtract(600) %>% magrittr::divide_by(100)
+  x
+}
+
 #' Survival Model Code
 #'
 #' Returns a string of the JAGS code
@@ -136,7 +147,7 @@ derived_code = "data{
              select_data = c("Capture", "PeriodCapture",
                              "Period", "Year*", "Season",
                              "Monitored", "Moved", "Reported",
-                             "Spawned", "SpawningPeriod", "Length*")
+                             "Spawned", "SpawningPeriod", "subtract600divide100(Length)")
   )
 }
 

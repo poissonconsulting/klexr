@@ -51,3 +51,13 @@ replicate_results("report")
 ## Information
 
 For more information type `?replicate_results` after loading the package.
+
+Acknowledgements
+----------------
+
+![](logos.gif)
+
+The project was primarily funded by the Habitat Conservation Trust Foundation.
+
+The Habitat Conservation Trust Foundation was created by an act of the legislature to preserve, restore and enhance key areas of habitat for fish and wildlife throughout British Columbia. Anglers, hunters, trappers and guides contribute to the projects of the Foundation through licence surcharges. Tax deductible donations to assist in the work of the Foundation are also welcomed.
+
