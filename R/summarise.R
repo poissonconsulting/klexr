@@ -26,10 +26,10 @@ tags2 <- function (x) {
 #' @return A named list of key results.
 #' @export
 summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
-  assert_that(is.lex_data(lex))
-  assert_that(is.detect_data(detect))
-  assert_that(is.jags_analysis(bull_trout))
-  assert_that(is.jags_analysis(rainbow_trout))
+  assert_that(lexr::is.lex_data(lex))
+  assert_that(lexr::is.detect_data(detect))
+  assert_that(jaggernaut::is.jags_analysis(bull_trout))
+  assert_that(jaggernaut::is.jags_analysis(rainbow_trout))
 
   sections <- detect$section@data
   stations <- dplyr::inner_join(lex$station, sections, by = "Section")

@@ -8,6 +8,8 @@ plot_analysis_length(data, years = 2008:2013)
 }
 \arguments{
 \item{data}{The data to plot.}
+
+\item{years}{A numeric vector of the number of years.}
 }
 \value{
 A ggplot2 object.

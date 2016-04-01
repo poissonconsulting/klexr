@@ -30,5 +30,6 @@ Imports:
     magrittr,
     plyr,
     reshape2,
-    scales
+    scales,
+    tidyr
 RoxygenNote: 5.0.1

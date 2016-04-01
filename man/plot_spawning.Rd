@@ -7,7 +7,9 @@
 plot_spawning(data1, data2)
 }
 \arguments{
-\item{data}{The data to plot.}
+\item{data1}{The first data to plot.}
+
+\item{data2}{The second data to plot.}
 }
 \value{
 A ggplot2 object.

@@ -67,6 +67,7 @@ plot_logical_matrix <- function(x) {
 #' Plots analysis data.
 #'
 #' @param data The data to plot.
+#' @param years A numeric vector of the number of years.
 #' @return A ggplot2 object.
 #' @export
 plot_analysis_data <- function(data, years = 2008:2013) {
@@ -84,10 +85,10 @@ plot_analysis_data <- function(data, years = 2008:2013) {
   ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Season, y = ~Capture)) +
     ggplot2::facet_grid(.~Year, drop = FALSE) +
     ggplot2::geom_raster(data = monitored, fill = "grey80") +
-    ggplot2::geom_point(data = capture, color = "red", position = position_nudge(x = -0.38)) +
-    ggplot2::geom_point(data = moved, color = "grey50", position = position_nudge(x = -0.1333), shape = 18) +
-    ggplot2::geom_point(data = spawned, color = "blue", position = position_nudge(x = 0.1333), shape = 17) +
-    ggplot2::geom_point(data = reported, position = position_nudge(x = 0.38), shape = 15) +
+    ggplot2::geom_point(data = capture, color = "red", position = ggplot2::position_nudge(x = -0.38)) +
+    ggplot2::geom_point(data = moved, color = "grey50", position = ggplot2::position_nudge(x = -0.1333), shape = 18) +
+    ggplot2::geom_point(data = spawned, color = "blue", position = ggplot2::position_nudge(x = 0.1333), shape = 17) +
+    ggplot2::geom_point(data = reported, position = ggplot2::position_nudge(x = 0.38), shape = 15) +
     ggplot2::scale_x_discrete(name = "Season", expand = c(0, 0.5)) +
     ggplot2::scale_y_discrete(name = "Capture", expand = c(0, 0.5)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5)) +
@@ -109,6 +110,7 @@ drop_post_recaps <- function (x) {
 #' Plots analysis length.
 #'
 #' @param data The data to plot.
+#' @param years A numeric vector of the number of years.
 #' @return A ggplot2 object.
 #' @export
 plot_analysis_length <- function(data, years = 2008:2013) {
@@ -136,7 +138,8 @@ plot_analysis_length <- function(data, years = 2008:2013) {
 #'
 #' Plots the probability of spawning by length.
 #'
-#' @param data The data to plot.
+#' @param data1 The first data to plot.
+#' @param data2 The second data to plot.
 #' @return A ggplot2 object.
 #' @export
 plot_spawning <- function(data1, data2) {
@@ -175,7 +178,8 @@ plot_spawning <- function(data1, data2) {
 #'
 #' Plots the key probabilities.
 #'
-#' @param data The data to plot.
+#' @param data1 The first data to plot.
+#' @param data2 The second data to plot.
 #' @return A ggplot2 object.
 #' @export
 plot_probs <- function(data1, data2) {
@@ -206,5 +210,5 @@ plot_probs <- function(data1, data2) {
     ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
     ggplot2::scale_color_manual(values = c("black", "red")) +
     ggplot2::expand_limits(y = c(0, 1)) +
-    ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1))
 }
