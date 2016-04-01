@@ -99,6 +99,11 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$tags_bt <- tags2(captures_all_bt)
   results$tags_rb <- tags2(captures_all_rb)
 
+  results$coef_bt <- coef(bull_trout)
+  results$coef_rb <- coef(rainbow_trout)
+
+  results$probs <- plot_probs(predict_probs(bull_trout), predict_probs(rainbow_trout))$data
+
   results
 }
 

@@ -151,5 +151,4 @@ dev.off()
 
 #' save list of summary information
 summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
-summary$probs <- plot_probs(probs_bt, probs_rb)$data
 saveRDS(summary, "results/summary.rds")
