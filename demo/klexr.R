@@ -1,7 +1,6 @@
 #' ---
 #' title: "Kootenay Lake Exploitation Analysis"
 #' author: "Joe Thorley"
-#' date: "March 30th, 2015"
 #' ---
 #'
 #' ensure required packages are loaded
@@ -20,6 +19,9 @@ dir.create("results", showWarnings = FALSE, recursive = TRUE)
 
 #' load hourly detection dataset
 lex <- input_lex_data("klexdatr")
+
+lex %<>% combine_sections_lex_data(list("S01" = c("S01", "S05", "S06"),
+                                        "S18" = c("S18", "S21")))
 
 #' plot a map of the study area
 png("results/Figure_1.png", width = 3, height = 6, units = "in", res = 900)
