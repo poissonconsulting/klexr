@@ -4,9 +4,13 @@
 \alias{survival_model_code}
 \title{Survival Model Code}
 \usage{
-survival_model_code(comments = TRUE)
+survival_model_code(species, model = "final", comments = TRUE)
 }
 \arguments{
+\item{species}{A string specifying the species ("Bull Trout", "Rainbow Trout")}
+
+\item{model}{A string specifying the model type ("base", "full" and "final")}
+
 \item{comments}{A flag indicating whether to include comments.}
 }
 \value{

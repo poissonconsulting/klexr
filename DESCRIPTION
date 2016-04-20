@@ -31,5 +31,6 @@ Imports:
     plyr,
     reshape2,
     scales,
-    tidyr
+    tidyr,
+    whisker
 RoxygenNote: 5.0.1

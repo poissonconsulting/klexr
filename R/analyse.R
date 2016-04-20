@@ -14,23 +14,44 @@ subtract600divide100 <- function(x) {
 #' Returns a string of the JAGS code
 #' defining the survival model.
 #'
+#' @param species A string specifying the species ("Bull Trout", "Rainbow Trout")
+#' @param model A string specifying the model type ("base", "full" and "final")
 #' @param comments A flag indicating whether to include comments.
 #' @return A string of the JAGS model code.
 #' @examples
 #' cat(survival_model_code())
 #' @export
-survival_model_code <- function(comments = TRUE) {
-  assert_that(is.flag(comments))
-  assert_that(noNA(comments))
+survival_model_code <- function(species, model = "final", comments = TRUE) {
+  check_scalar(species, c("Bull Trout", "Rainbow Trout", "Rainbow Trout"))
+  check_scalar(model, c("base", "full", "final"))
+  check_flag(comments)
 
-  model_code <- "model{
+  data <- list()
+
+  data$kI <- switch(model,
+         base = 0,
+         full = 1,
+         final = 0.5,
+         stop())
+
+  model_code <- "
+data {
+  kI <- {{kI}}
+}
+model{
+
   bSpawning ~ dnorm(0, 3^-2)
   bMoving ~ dnorm(0, 3^-2)
   bReported ~ dnorm(0, 3^-2)
-  bMortality ~ dnorm(0, 3^-2) # $\\beta_{\\lambda 0}$
+
+  bMortality ~ dnorm(0, 3^-2)
+
+  iMortalitySpawning ~ dbern(kI)
+  muMortalitySpawning <- (1-iMortalitySpawning) * -3
+  sdMortalitySpawning <- iMortalitySpawning * 3 + (1-iMortalitySpawning) * 1.7
+  bMortalitySpawning ~ dnorm(muMortalitySpawning, sdMortalitySpawning^-2) # $\\beta_{\\lambda 0}$
 
   bSpawningLength ~ dnorm(0, 3^-2)
-  bMortalitySpawning ~ dnorm(0, 3^-2)
 
   for (i in 1:nCapture){
     eAlive[i,PeriodCapture[i]] <- 1
@@ -47,7 +68,7 @@ survival_model_code <- function(comments = TRUE) {
     eReportedSeasonal[i,PeriodCapture[i]] <- 1-(1-eReported[i,PeriodCapture[i]])^(1/nSeason)
     Reported[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * eReportedSeasonal[i,PeriodCapture[i]])
 
-    logit(eMortality[i, PeriodCapture[i]]) <- bMortality + bMortalitySpawning * Spawned[i,PeriodCapture[i]]
+    logit(eMortality[i, PeriodCapture[i]]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,PeriodCapture[i]]
     eMortalitySeasonal[i,PeriodCapture[i]] <- 1-(1-eMortality[i,PeriodCapture[i]])^(1/nSeason)
 
     for(j in (PeriodCapture[i]+1):nPeriod) {
@@ -62,16 +83,18 @@ survival_model_code <- function(comments = TRUE) {
       logit(eReported[i,j]) <- bReported
       eReportedSeasonal[i,j] <- 1-(1-eReported[i,j])^(1/nSeason)
       Reported[i,j] ~ dbern(eAlive[i,j] * eReportedSeasonal[i,j])
-      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * Spawned[i,j]
+      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,j]
       eMortalitySeasonal[i,j] <- 1-(1-eMortality[i,j])^(1/nSeason)
     }
   }
 }"
+  model_code %<>%  whisker::whisker.render(data)
+
   ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
 }
 
-survival_model <- function () {
-  jaggernaut::jags_model(survival_model_code(),
+survival_model <- function(species, model) {
+  jaggernaut::jags_model(survival_model_code(species = species, model = model),
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
@@ -147,7 +170,9 @@ derived_code = "data{
              select_data = c("Capture", "PeriodCapture",
                              "Period", "Year*", "Season",
                              "Monitored", "Moved", "Reported",
-                             "Spawned", "SpawningPeriod", "subtract600divide100(Length)")
+                             "Spawned", "SpawningPeriod", "subtract600divide100(Length)"),
+random_effects = list(bMortalityPeriod = "Period"),
+monitor = "^(b|i|k)[A-Z]"
   )
 }
 
@@ -164,12 +189,13 @@ derived_code = "data{
 #' \code{\link{make_analysis_data}} function.
 #'
 #' @param data A \code{analysis_data} object of the detection and recapture data to analyse.
+#' @param model A string specifying the model type ("base", "full" and "final")
 #' @param niters An integer of the minimum number of MCMC iterations to
 #' perform.
 #' @param mode A character element indicating the mode for the analysis.
 #' @return A jags_analysis object.
 #' @export
-analyse_survival <- function(data, niters = 10^5, mode = "current") {
+analyse_survival <- function(data, model = "final", niters = 10^5, mode = "current") {
   assert_that(is.data.frame(data))
   assert_that(is.count(niters) && noNA(niters))
 
@@ -200,5 +226,6 @@ analyse_survival <- function(data, niters = 10^5, mode = "current") {
       Season = factor(1)),
     key = c("Capture", "Period"), select = TRUE)
 
-  jaggernaut::jags_analysis(survival_model(), data, niters = niters, mode = mode)
+  jaggernaut::jags_analysis(survival_model(species = as.character(data$Species[1]), model = model),
+                            data, niters = niters, mode = mode)
 }

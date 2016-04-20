@@ -4,10 +4,12 @@
 \alias{analyse_survival}
 \title{Analyse Detections and Recaptures}
 \usage{
-analyse_survival(data, niters = 10^5, mode = "current")
+analyse_survival(data, model = "final", niters = 10^5, mode = "current")
 }
 \arguments{
 \item{data}{A \code{analysis_data} object of the detection and recapture data to analyse.}
+
+\item{model}{A string specifying the model type ("base", "full" and "final")}
 
 \item{niters}{An integer of the minimum number of MCMC iterations to
 perform.}

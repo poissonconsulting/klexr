@@ -104,17 +104,17 @@ png("results/FigureS02.png", width = 3, height = 3, units = "in", res = 900)
 plot_analysis_length(rainbow_trout)
 dev.off()
 
-# print JAGS model code for mortality model
-cat(survival_model_code())
-
 #' analyse bull trout data using mortality model
-bull_trout %<>% analyse_survival()
+bull_trout2 <- analyse_survival(bull_trout, model = "base")
 
 #' save rainbow trout analysis to results
 saveRDS(bull_trout, "results/bull_trout.rds")
 
 #' print bull trout coefficient table
 summary(bull_trout)
+
+# print JAGS model code for BT mortality model
+cat(model_code(bull_trout2))
 
 #' save bull trout traceplots
 pdf("results/traceplots_bt.pdf")
