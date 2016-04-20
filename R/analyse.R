@@ -51,6 +51,12 @@ model{
   sdMortalitySpawning <- iMortalitySpawning * 3 + (1-iMortalitySpawning) * 1.7
   bMortalitySpawning ~ dnorm(muMortalitySpawning, sdMortalitySpawning^-2) # $\\beta_{\\lambda 0}$
 
+  iMortalityPeriod ~ dbern(kI)
+  sMortalityPeriod ~ dunif(0, 3)
+  for(i in 1:nPeriod) {
+    bMortalityPeriod[i] ~ dnorm(0, sMortalityPeriod^-2)
+  }
+
   bSpawningLength ~ dnorm(0, 3^-2)
 
   for (i in 1:nCapture){
@@ -68,7 +74,7 @@ model{
     eReportedSeasonal[i,PeriodCapture[i]] <- 1-(1-eReported[i,PeriodCapture[i]])^(1/nSeason)
     Reported[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * eReportedSeasonal[i,PeriodCapture[i]])
 
-    logit(eMortality[i, PeriodCapture[i]]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,PeriodCapture[i]]
+    logit(eMortality[i, PeriodCapture[i]]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,PeriodCapture[i]] + bMortalityPeriod[PeriodCapture[i]] * iMortalityPeriod
     eMortalitySeasonal[i,PeriodCapture[i]] <- 1-(1-eMortality[i,PeriodCapture[i]])^(1/nSeason)
 
     for(j in (PeriodCapture[i]+1):nPeriod) {
@@ -83,7 +89,7 @@ model{
       logit(eReported[i,j]) <- bReported
       eReportedSeasonal[i,j] <- 1-(1-eReported[i,j])^(1/nSeason)
       Reported[i,j] ~ dbern(eAlive[i,j] * eReportedSeasonal[i,j])
-      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,j]
+      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,j] + bMortalityPeriod[j] * iMortalityPeriod
       eMortalitySeasonal[i,j] <- 1-(1-eMortality[i,j])^(1/nSeason)
     }
   }
@@ -94,13 +100,24 @@ model{
 }
 
 survival_model <- function(species, model) {
+
+  monitor <- c("bMortality", "bMoving", "bReported", "bSpawning", "bSpawningLength")
+
+  if(model %in% c("full", "final"))
+    monitor %<>% c("bMortalitySpawning", "sMortalityPeriod", "bMortalityPeriod")
+  if(model == "final") monitor %<>% c("iMortalitySpawning", "iMortalityPeriod")
+
+  random_effects <- list()
+  if(model %in% c("full", "final"))
+     random_effects %<>% c(list(bMortalityPeriod = "Period"))
+
   jaggernaut::jags_model(survival_model_code(species = species, model = model),
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
     logit(eMoving[i]) <- bMoving
     logit(eReported[i]) <- bReported
-    logit(eMortality[i]) <- bMortality
+    logit(eMortality[i]) <- bMortality + bMortalityPeriod[Period[i]]
     eMortalitySeason[i] <- 1-(1-eMortality[i])^(1/nSeason)
     logit(eMortalitySpawning[i]) <- bMortality + bMortalitySpawning
     eMortalitySpawningSeason[i] <- 1-(1-eMortalitySpawning[i])^(1/nSeason)
@@ -171,8 +188,8 @@ derived_code = "data{
                              "Period", "Year*", "Season",
                              "Monitored", "Moved", "Reported",
                              "Spawned", "SpawningPeriod", "subtract600divide100(Length)"),
-random_effects = list(bMortalityPeriod = "Period"),
-monitor = "^(b|i|k)[A-Z]"
+random_effects = random_effects,
+monitor = monitor
   )
 }
 

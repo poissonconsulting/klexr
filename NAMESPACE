@@ -3,6 +3,7 @@
 export(analyse_survival)
 export(plot_analysis_data)
 export(plot_analysis_length)
+export(plot_pointrange)
 export(plot_probs)
 export(plot_section)
 export(plot_spawning)

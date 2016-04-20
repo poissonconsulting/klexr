@@ -105,7 +105,10 @@ plot_analysis_length(rainbow_trout)
 dev.off()
 
 #' analyse bull trout data using mortality model
-bull_trout2 <- analyse_survival(bull_trout, model = "base")
+bull_trout2 <- analyse_survival(bull_trout, model = "full")
+
+mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
+plot_pointrange(mort_period_bt, "Period")
 
 #' save rainbow trout analysis to results
 saveRDS(bull_trout, "results/bull_trout.rds")

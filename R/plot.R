@@ -212,3 +212,23 @@ plot_probs <- function(data1, data2) {
     ggplot2::expand_limits(y = c(0, 1)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1))
 }
+
+#' Plot Point Range
+#'
+#' @param data The data frame to plot.
+#' @param x A string specifying the column to plot on the x-axis.
+#'
+#' @return A ggplot object.
+#' @export
+plot_pointrange <- function(data, x) {
+  check_string(x)
+
+  check_data1(data, values = list(
+    estimate = 1,
+    lower = 1,
+    upper = 1), min_row = 1)
+
+  ggplot2::ggplot(data = data, ggplot2::aes_string(x = x, y = "estimate")) +
+    ggplot2::geom_pointrange(ggplot2::aes_string(ymin = "lower", ymax = "upper"))
+}
+
