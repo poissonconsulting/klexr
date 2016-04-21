@@ -6,12 +6,12 @@
 #' @return A data frame of probabilities
 #' @export
 predict_probs <- function(analysis) {
-  reported <- predict(analysis, parm = "eReported", newdata = "")
+  recaptured <- predict(analysis, parm = "eRecapture", newdata = "")
   moving <- predict(analysis, parm = "eMoving", newdata = "")
   mortality <- predict(analysis, parm = "eMortality", newdata = "")
   mortality_spawning <- predict(analysis, parm = "eMortalitySpawningAnnual", newdata = "")
 
-  probs <- dplyr::bind_rows("Movement Detected" = moving, "Angled Reported" = reported,
+  probs <- dplyr::bind_rows("Movement Detected" = moving, "Angled Recaptured" = recaptured,
                    "Mortality Inlake" = mortality,
                    "Mortality Spawner" = mortality_spawning, .id = "Parameter")
   . <- NULL

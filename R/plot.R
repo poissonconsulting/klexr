@@ -80,7 +80,7 @@ plot_analysis_data <- function(data, years = 2008:2013) {
   capture <- dplyr::filter_(data, ~Period == PeriodCapture)
   spawned <- dplyr::filter_(data, ~Spawned)
   moved <- dplyr::filter_(data, ~Moved)
-  reported <- dplyr::filter_(data, ~Reported)
+  recaptured <- dplyr::filter_(data, ~Recaptured)
 
   ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Season, y = ~Capture)) +
     ggplot2::facet_grid(.~Year, drop = FALSE) +
@@ -88,7 +88,7 @@ plot_analysis_data <- function(data, years = 2008:2013) {
     ggplot2::geom_point(data = capture, color = "red", position = ggplot2::position_nudge(x = -0.38)) +
     ggplot2::geom_point(data = moved, color = "grey50", position = ggplot2::position_nudge(x = -0.1333), shape = 18) +
     ggplot2::geom_point(data = spawned, color = "blue", position = ggplot2::position_nudge(x = 0.1333), shape = 17) +
-    ggplot2::geom_point(data = reported, position = ggplot2::position_nudge(x = 0.38), shape = 15) +
+    ggplot2::geom_point(data = recaptured, position = ggplot2::position_nudge(x = 0.38), shape = 15) +
     ggplot2::scale_x_discrete(name = "Season", expand = c(0, 0.5)) +
     ggplot2::scale_y_discrete(name = "Capture", expand = c(0, 0.5)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5)) +
@@ -98,7 +98,7 @@ plot_analysis_data <- function(data, years = 2008:2013) {
 
 drop_post_recaps <- function (x) {
   x %<>% dplyr::arrange_(~Period)
-  recap <- which(x$Reported)
+  recap <- which(x$Recaptured)
   stopifnot(length(recap) < 2)
   if (length(recap))
     x %<>% dplyr::slice(1:recap)
@@ -121,7 +121,7 @@ plot_analysis_length <- function(data, years = 2008:2013) {
 
   data %<>% dplyr::filter_(~as.integer(Period) >= as.integer(PeriodCapture))
   capture <- dplyr::filter_(data, ~Period == PeriodCapture)
-  recapture <- dplyr::filter_(data, ~Reported)
+  recapture <- dplyr::filter_(data, ~Recaptured)
 
   data %<>% plyr::ddply(c("Capture"), drop_post_recaps)
 

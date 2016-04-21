@@ -39,30 +39,18 @@ data {
   kI <- {{kI}}
 }
 model{
-
   bSpawning ~ dnorm(0, 3^-2)
-  bMoving ~ dnorm(0, 3^-2)
-  bReported ~ dnorm(0, 3^-2)
-
-  bMortality ~ dnorm(0, 3^-2)
-
   bSpawningLength ~ dnorm(0, 3^-2)
+  bMoving ~ dnorm(0, 3^-2)
+  bMovingSpawningPeriod ~ dnorm(0, 3^-2)
+  bRecapture ~ dnorm(0, 3^-2)
+  bSurvival ~ dnorm(0, 3^-2)
+  bSurvivalSpawning ~ dnorm(0, 3^-2)
 
-  iMortalitySpawning ~ dbern(kI)
-  muMortalitySpawning <- (1-iMortalitySpawning) * -3
-  sdMortalitySpawning <- iMortalitySpawning * 3 + (1-iMortalitySpawning) * 1.7
-  bMortalitySpawning ~ dnorm(muMortalitySpawning, sdMortalitySpawning^-2) # $\\beta_{\\lambda 0}$
-
-  iMortalityLength ~ dbern(kI)
-  muMortalityLength <- (1-iMortalityLength) * -3
-  sdMortalityLength <- iMortalityLength * 3 + (1-iMortalityLength) * 1.7
-  bMortalityLength ~ dnorm(muMortalityLength, sdMortalityLength^-2) # $\\beta_{\\lambda 0}$
-
-  iMortalityPeriod ~ dbern(kI)
-  sMortalityPeriod ~ dunif(0, 5)
-  for(i in 1:nPeriod) {
-    bMortalityPeriod[i] ~ dnorm(0, sMortalityPeriod^-2)
-  }
+#  iSurvivalLength ~ dbern(kI)
+#  muSurvivalLength <- (1-iSurvivalLength) * -3
+#  sdSurvivalLength <- iSurvivalLength * 3 + (1-iSurvivalLength) * 1.7
+#  bSurvivalLength ~ dnorm(muSurvivalLength, sdSurvivalLength^-2) # $\\beta_{\\lambda 0}$
 
   for (i in 1:nCapture){
     eAlive[i,PeriodCapture[i]] <- 1
@@ -71,31 +59,28 @@ model{
 
     Spawned[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * SpawningPeriod[PeriodCapture[i]] * eSpawning[i,PeriodCapture[i]])
 
-    logit(eMoving[i,PeriodCapture[i]]) <- bMoving
+    logit(eMoving[i,PeriodCapture[i]]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[PeriodCapture[i]]
 
     Moved[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * Monitored[i,PeriodCapture[i]] * eMoving[i,PeriodCapture[i]])
 
-    logit(eReported[i,PeriodCapture[i]]) <- bReported
-    eReportedSeasonal[i,PeriodCapture[i]] <- 1-(1-eReported[i,PeriodCapture[i]])^(1/nSeason)
-    Reported[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * eReportedSeasonal[i,PeriodCapture[i]])
+    logit(eRecapture[i,PeriodCapture[i]]) <- bRecapture
 
-    logit(eMortality[i, PeriodCapture[i]]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,PeriodCapture[i]] + bMortalityLength * iMortalityLength * Length[i,PeriodCapture[i]] + bMortalityPeriod[PeriodCapture[i]] * iMortalityPeriod
-    eMortalitySeasonal[i,PeriodCapture[i]] <- 1-(1-eMortality[i,PeriodCapture[i]])^(1/nSeason)
+    Recaptured[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * eRecapture[i,PeriodCapture[i]])
+
+    logit(eSurvival[i, PeriodCapture[i]]) <- bSurvival + bSurvivalSpawning * Spawned[i,PeriodCapture[i]]
 
     for(j in (PeriodCapture[i]+1):nPeriod) {
-      eAlive[i,j] ~ dbern(eAlive[i,j-1] * (1-eMortalitySeasonal[i,j-1]) * (1-Reported[i,j-1]))
+      eAlive[i,j] ~ dbern(eAlive[i,j-1] * eSurvival[i,j-1] * (1-Recaptured[i,j-1]))
 
       logit(eSpawning[i,j]) <- bSpawning + bSpawningLength * Length[i,j]
       Spawned[i,j] ~ dbern(eAlive[i,j] *  SpawningPeriod[j] * eSpawning[i,j])
 
-      logit(eMoving[i,j]) <- bMoving
+      logit(eMoving[i,j]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[j]
       Moved[i,j] ~ dbern(eAlive[i,j] * Monitored[i,j] * eMoving[i,j])
 
-      logit(eReported[i,j]) <- bReported
-      eReportedSeasonal[i,j] <- 1-(1-eReported[i,j])^(1/nSeason)
-      Reported[i,j] ~ dbern(eAlive[i,j] * eReportedSeasonal[i,j])
-      logit(eMortality[i,j]) <- bMortality + bMortalitySpawning * iMortalitySpawning * Spawned[i,j] + bMortalityLength * iMortalityLength * Length[i,j] + bMortalityPeriod[j] * iMortalityPeriod
-      eMortalitySeasonal[i,j] <- 1-(1-eMortality[i,j])^(1/nSeason)
+      logit(eRecapture[i,j]) <- bRecapture
+      Recaptured[i,j] ~ dbern(eAlive[i,j] * eRecapture[i,j])
+      logit(eSurvival[i,j]) <- bSurvival + bSurvivalSpawning * Spawned[i,j]
     }
   }
 }"
@@ -106,22 +91,12 @@ model{
 
 survival_model <- function(species, model) {
 
-  monitor <- c("bMortality", "bMoving", "bReported", "bSpawning", "bSpawningLength", "bMortalityLength")
-
-  if(model %in% c("full", "final"))
-    monitor %<>% c("bMortalitySpawning", "sMortalityPeriod", "bMortalityPeriod")
-  if(model == "final") monitor %<>% c("iMortalitySpawning", "iMortalityPeriod", "iMortalityLength")
-
-  random_effects <- list()
-  if(model %in% c("full", "final"))
-     random_effects %<>% c(list(bMortalityPeriod = "Period"))
-
   jaggernaut::jags_model(survival_model_code(species = species, model = model),
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
-    logit(eMoving[i]) <- bMoving
-    logit(eReported[i]) <- bReported
+    logit(eMoving[i]) <- bMovingSeason[Season[i]]
+    logit(eRecapture[i]) <- bRecapture
     logit(eMortality[i]) <- bMortality + bMortalityPeriod[Period[i]]
     eMortalitySeason[i] <- 1-(1-eMortality[i])^(1/nSeason)
     logit(eMortalitySpawning[i]) <- bMortality + bMortalitySpawning
@@ -138,10 +113,10 @@ derived_code = "data{
                  undefined[i,data$PeriodCapture[i]:data$nPeriod] <- FALSE
                }
 
-               inits$eAlive <- array(1, dim = dim(data$Reported))
+               inits$eAlive <- array(1, dim = dim(data$Recaptured))
                for (i in 1:data$nCapture) {
                  for (j in 2:ncol(inits$eAlive)) {
-                   inits$eAlive[i,j] <- inits$eAlive[i,j-1] * (1 - data$Reported[i,j-1])
+                   inits$eAlive[i,j] <- inits$eAlive[i,j-1] * (1 - data$Recaptured[i,j-1])
                  }
                }
 
@@ -157,7 +132,7 @@ derived_code = "data{
              modify_data = function(data) {
 
                df <- as.data.frame(data[c("Capture", "Period", "PeriodCapture",
-                                          "Monitored", "Moved", "Reported", "Year", "Season",
+                                          "Monitored", "Moved", "Recaptured", "Year", "Season",
                                           "Spawned", "SpawningPeriod", "Length")])
 
                data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, value.var = "SpawningPeriod")
@@ -174,7 +149,7 @@ derived_code = "data{
 
                data$Monitored <- reshape2::acast(df, Capture ~ Period, value.var = "Monitored")
 
-               data$Reported <- reshape2::acast(df, Capture ~ Period, value.var = "Reported")
+               data$Recaptured <- reshape2::acast(df, Capture ~ Period, value.var = "Recaptured")
                data$Length <- reshape2::acast(df, Capture ~ Period, value.var = "Length")
                data$Spawned <- reshape2::acast(df, Capture ~ Period, value.var = "Spawned")
 
@@ -185,19 +160,16 @@ derived_code = "data{
                data$nPeriodCapture <- NULL
                data$nPeriodTagExpire <- NULL
                data$Year <- NULL
-               data$Season <- NULL
 
                data
              },
              select_data = c("Capture", "PeriodCapture",
                              "Period", "Year*", "Season",
-                             "Monitored", "Moved", "Reported",
+                             "Monitored", "Moved", "Recaptured",
                              "Spawned", "SpawningPeriod", "subtract600divide100(Length)"),
-random_effects = random_effects,
-monitor = monitor
+monitor = "^([^de]|.[^A-Z])"
   )
 }
-
 
 #' Analyse Detections and Recaptures
 #'
@@ -239,7 +211,7 @@ analyse_survival <- function(data, model = "final", niters = 10^5, mode = "curre
       Monitored = TRUE,
       Detected = TRUE,
       Moved = TRUE,
-      Reported = TRUE,
+      Recaptured = TRUE,
       Public = c(TRUE, NA),
       Removed = c(TRUE, NA),
       Released = c(TRUE, NA),

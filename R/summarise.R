@@ -48,10 +48,10 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
     dplyr::filter_(~Period == PeriodCapture)
 
   recaptures_bt <- jaggernaut::dataset(bull_trout) %>%
-    dplyr::filter_(~Reported)
+    dplyr::filter_(~Recaptured)
 
   recaptures_rb <- jaggernaut::dataset(rainbow_trout) %>%
-    dplyr::filter_(~Reported)
+    dplyr::filter_(~Recaptured)
 
   results <- list()
   results$nSections <- nrow(sections)

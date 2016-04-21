@@ -80,6 +80,10 @@ rainbow_trout %<>% make_analysis_data(
 bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
 
+# rename Reported as Recaptured
+bull_trout %<>% rename(Recaptured = Reported)
+rainbow_trout %<>% rename(Recaptured = Reported)
+
 #' add season column
 bull_trout$Season <- season(bull_trout$Month)
 rainbow_trout$Season <- season(rainbow_trout$Month)
@@ -125,7 +129,7 @@ plot(bull_trout)
 dev.off()
 
 #' analyse rainbow trout data using mortality model
-rainbow_trout %<>% analyse_survival()
+rainbow_trout2 <- analyse_survival(rainbow_trout)
 
 #' save rainbow trout analysis to results
 saveRDS(rainbow_trout, "results/rainbow_trout.rds")
