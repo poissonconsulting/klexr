@@ -37,6 +37,7 @@ survival_model_code <- function(species, model = "final", comments = TRUE) {
   model_code <- "
 data {
   kI <- {{kI}}
+  kC <- 10^-2
 }
 model{
   bSpawning ~ dnorm(0, 3^-2)
@@ -47,10 +48,13 @@ model{
   bSurvival ~ dnorm(0, 3^-2)
   bSurvivalSpawning ~ dnorm(0, 3^-2)
 
-#  iSurvivalLength ~ dbern(kI)
-#  muSurvivalLength <- (1-iSurvivalLength) * -3
-#  sdSurvivalLength <- iSurvivalLength * 3 + (1-iSurvivalLength) * 1.7
-#  bSurvivalLength ~ dnorm(muSurvivalLength, sdSurvivalLength^-2) # $\\beta_{\\lambda 0}$
+  iRecaptureYear ~ dbern(kI)
+  sdRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * kC
+  bRecaptureYear ~ dnorm(0, sdRecaptureYear^-2)
+
+  iSurvivalYear ~ dbern(kI)
+  sdSurvivalYear <- iSurvivalYear * 3 + (1-iSurvivalYear) * 3 * kC
+  bSurvivalYear ~ dnorm(0, sdSurvivalYear^-2)
 
   for (i in 1:nCapture){
     eAlive[i,PeriodCapture[i]] <- 1
@@ -63,11 +67,12 @@ model{
 
     Moved[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * Monitored[i,PeriodCapture[i]] * eMoving[i,PeriodCapture[i]])
 
-    logit(eRecapture[i,PeriodCapture[i]]) <- bRecapture
+    logit(eRecapture[i,PeriodCapture[i]]) <- bRecapture + bRecaptureYear * Year[PeriodCapture[i]]
 
     Recaptured[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * eRecapture[i,PeriodCapture[i]])
 
-    logit(eSurvival[i, PeriodCapture[i]]) <- bSurvival + bSurvivalSpawning * Spawned[i,PeriodCapture[i]]
+    logit(eSurvival[i, PeriodCapture[i]]) <- bSurvival + bSurvivalSpawning * Spawned[i,PeriodCapture[i]] +
+bSurvivalYear * Year[PeriodCapture[i]]
 
     for(j in (PeriodCapture[i]+1):nPeriod) {
       eAlive[i,j] ~ dbern(eAlive[i,j-1] * eSurvival[i,j-1] * (1-Recaptured[i,j-1]))
@@ -78,9 +83,10 @@ model{
       logit(eMoving[i,j]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[j]
       Moved[i,j] ~ dbern(eAlive[i,j] * Monitored[i,j] * eMoving[i,j])
 
-      logit(eRecapture[i,j]) <- bRecapture
+      logit(eRecapture[i,j]) <- bRecapture + bRecaptureYear * Year[j]
       Recaptured[i,j] ~ dbern(eAlive[i,j] * eRecapture[i,j])
-      logit(eSurvival[i,j]) <- bSurvival + bSurvivalSpawning * Spawned[i,j]
+      logit(eSurvival[i,j]) <- bSurvival + bSurvivalSpawning * Spawned[i,j] +
+bSurvivalYear * Year[j]
     }
   }
 }"
@@ -159,7 +165,6 @@ derived_code = "data{
                data$Period <- NULL
                data$nPeriodCapture <- NULL
                data$nPeriodTagExpire <- NULL
-               data$Year <- NULL
 
                data
              },
