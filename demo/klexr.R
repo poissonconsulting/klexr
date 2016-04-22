@@ -109,10 +109,10 @@ plot_analysis_length(rainbow_trout)
 dev.off()
 
 #' analyse bull trout data using mortality model
-bull_trout2 <- analyse_survival(bull_trout, model = "final")
-
-mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
-plot_pointrange(mort_period_bt, "Period")
+bull_trout %<>% analyse_survival(model = "final")
+#
+# mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
+# plot_pointrange(mort_period_bt, "Period")
 
 #' save rainbow trout analysis to results
 saveRDS(bull_trout, "results/bull_trout.rds")
@@ -121,7 +121,7 @@ saveRDS(bull_trout, "results/bull_trout.rds")
 summary(bull_trout)
 
 # print JAGS model code for BT mortality model
-cat(model_code(bull_trout2))
+cat(model_code(bull_trout))
 
 #' save bull trout traceplots
 pdf("results/traceplots_bt.pdf")
@@ -129,7 +129,7 @@ plot(bull_trout)
 dev.off()
 
 #' analyse rainbow trout data using mortality model
-rainbow_trout2 <- analyse_survival(rainbow_trout)
+rainbow_trout %<>% analyse_survival(model = "final")
 
 #' save rainbow trout analysis to results
 saveRDS(rainbow_trout, "results/rainbow_trout.rds")
@@ -142,22 +142,22 @@ pdf("results/traceplots_rb.pdf")
 plot(rainbow_trout)
 dev.off()
 
-# predict and plot key parameters
-probs_bt <- predict_probs(bull_trout)
-probs_rb <- predict_probs(rainbow_trout)
-png("results/Figure_7.png", width = 4, height = 4, units = "in", res = 900)
-plot_probs(probs_bt, probs_rb)
-dev.off()
-
-# predict and plot probability of spawning by length
-spawn_bt <- predict(bull_trout, parm = "eSpawning",
-                       newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
-                       newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-png("results/Figure_8.png", width = 4, height = 3, units = "in", res = 900)
-plot_spawning(spawn_bt, spawn_rb)
-dev.off()
-
-#' save list of summary information
-summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
-saveRDS(summary, "results/summary.rds")
+#' # predict and plot key parameters
+#' probs_bt <- predict_probs(bull_trout)
+#' probs_rb <- predict_probs(rainbow_trout)
+#' png("results/Figure_7.png", width = 4, height = 4, units = "in", res = 900)
+#' plot_probs(probs_bt, probs_rb)
+#' dev.off()
+#'
+#' # predict and plot probability of spawning by length
+#' spawn_bt <- predict(bull_trout, parm = "eSpawning",
+#'                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
+#' spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
+#'                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
+#' png("results/Figure_8.png", width = 4, height = 3, units = "in", res = 900)
+#' plot_spawning(spawn_bt, spawn_rb)
+#' dev.off()
+#'
+#' #' save list of summary information
+#' summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
+#' saveRDS(summary, "results/summary.rds")

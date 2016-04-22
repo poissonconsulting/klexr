@@ -41,12 +41,21 @@ data {
 }
 model{
   bSpawning ~ dnorm(0, 3^-2)
-  bSpawningLength ~ dnorm(0, 3^-2)
   bMoving ~ dnorm(0, 3^-2)
-  bMovingSpawningPeriod ~ dnorm(0, 3^-2)
   bRecapture ~ dnorm(0, 3^-2)
   bSurvival ~ dnorm(0, 3^-2)
-  bSurvivalSpawning ~ dnorm(0, 3^-2)
+
+  iSpawningLength ~ dbern(kI)
+  sdSpawningLength <- iSpawningLength * 3 + (1-iSpawningLength) * 3 * kC
+  bSpawningLength ~ dnorm(0, sdSpawningLength^-2)
+
+  iMovingSpawningPeriod ~ dbern(kI)
+  sdMovingSpawningPeriod <- iMovingSpawningPeriod * 3 + (1-iMovingSpawningPeriod) * 3 * kC
+  bMovingSpawningPeriod ~ dnorm(0, sdMovingSpawningPeriod^-2)
+
+  iSurvivalSpawing ~ dbern(kI)
+  sdSurvivalSpawning <- iSurvivalSpawing * 3 + (1-iSurvivalSpawing) * 3 * kC
+  bSurvivalSpawning ~ dnorm(0, sdSurvivalSpawning^-2)
 
   iRecaptureYear ~ dbern(kI)
   sdRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * kC
