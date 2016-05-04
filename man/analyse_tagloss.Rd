@@ -4,10 +4,10 @@
 \alias{analyse_tagloss}
 \title{Analyse Tag Loss}
 \usage{
-analyse_tagloss(data, niters = 10^3, mode = "current")
+analyse_tagloss(table, niters = 10^3, mode = "current")
 }
 \arguments{
-\item{data}{A \code{data.frame} of the tag data to analyse.}
+\item{table}{A table of the number of recaptures with $100 and $10 tags.}
 
 \item{niters}{An integer of the minimum number of MCMC iterations to
 perform.}
@@ -18,12 +18,10 @@ perform.}
 A jags_analysis object.
 }
 \description{
-Analyses tag loss using a simple Bayesian zero-truncated binomial tag-loss model.
+Analyses tag loss data using a simple Bayesian zero-truncated binomial tag-loss model.
 }
 \details{
 To view the full model description
 in the JAGS dialect of the BUGS language use \code{\link{tagloss_model_code}}.
-
-The data must be a data frame with a single column Tags where the permitted values are 1 and 2.
 }
 

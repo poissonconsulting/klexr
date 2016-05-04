@@ -57,9 +57,9 @@ plot_logical_matrix <- function(x) {
   colnames(x) <- c("Var1", "Var2", "value")
 
   ggplot2::ggplot(data = x, ggplot2::aes_(x = ~Var2, y = ~Var1)) +
-          ggplot2::geom_point(ggplot2::aes_string(shape = "value", color = "value")) +
-          ggplot2::scale_color_manual(values = c("red", "black")) +
-          ggplot2::scale_shape_manual(values = c(17, 16))
+    ggplot2::geom_point(ggplot2::aes_string(shape = "value", color = "value")) +
+    ggplot2::scale_color_manual(values = c("red", "black")) +
+    ggplot2::scale_shape_manual(values = c(17, 16))
 }
 
 #' Plot Analysis Data
@@ -134,101 +134,54 @@ plot_analysis_length <- function(data, years = 2008:2013) {
     ggplot2::expand_limits(x = as.Date("2008-01-01", "2013-12-31"))
 }
 
-#' Plot Spawning
+plot_type <- function(data, x, xlab) {
+  if (is.logical(data[[x]]) | is.factor(data[[x]])) {
+    return(list(
+    ggplot2::geom_pointrange(ggplot2::aes_string(ymin = "lower", ymax = "upper"),
+                             position = ggplot2::position_dodge(width = 0.25)),
+    ggplot2::scale_x_discrete(name = xlab)))
+  }
+  list(ggplot2::geom_line(),
+       ggplot2::geom_line(ggplot2::aes_string(y = "lower"), linetype = "dotted"),
+       ggplot2::geom_line(ggplot2::aes_string(y = "upper"), linetype = "dotted"),
+       ggplot2::scale_x_continuous(name = xlab))
+}
+
+#' Plot Probability
 #'
-#' Plots the probability of spawning by length.
+#' Plots the probability of x
 #'
 #' @param data1 The first data to plot.
 #' @param data2 The second data to plot.
+#' @param x A string of the column to plot on the x-axis.
+#' @param xlab A string of the x-axis name.
+#' @param ylab A string of the y-axis name.
 #' @return A ggplot2 object.
 #' @export
-plot_spawning <- function(data1, data2) {
-  data1 %<>% check_data3(values = list(
+plot_probability <- function(data1, data2, x, xlab = x, ylab = "Probability (%)") {
+
+  data1 %<>% check_data1(values = list(
     Species = factor(1),
-    Length = c(500L, 800L),
     estimate = c(0, 1),
     lower = c(0, 1),
-    upper = c(0, 1)), select = TRUE, min_row = 2)
+    upper = c(0, 1)), min_row = 2)
 
-  data2 %<>% check_data3(values = list(
+  data2 %<>% check_data1(values = list(
     Species = factor(1),
-    Length = c(500L, 800L),
     estimate = c(0, 1),
     lower = c(0, 1),
-    upper = c(0, 1)), select = TRUE, min_row = 2)
+    upper = c(0, 1)), min_row = 2)
 
-  data1$Species %<>% as.character()
-  data2$Species %<>% as.character()
+  data1 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))
+  data2 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))
 
   data <- dplyr::bind_rows(data1, data2)
   data$Species %<>% factor(levels = c(data1$Species[1], data2$Species[1]))
 
-  ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Length, y = ~estimate,
-                                             group = ~Species, color = ~Species)) +
-    ggplot2::geom_line() +
-    ggplot2::geom_line(ggplot2::aes_(y = ~lower), linetype = "dotted") +
-    ggplot2::geom_line(ggplot2::aes_(y = ~upper), linetype = "dotted") +
-    ggplot2::scale_x_continuous(name = "Fork Length (mm)") +
-    ggplot2::scale_y_continuous(name = "Annual Spawning  Probability (%)", labels = scales::percent) +
+  ggplot2::ggplot(data = data, ggplot2::aes_string(x = x, y = "estimate",
+                                                   group = "Species", color = "Species")) +
+    plot_type(data, x, xlab) +
+    ggplot2::scale_y_continuous(name = ylab, labels = scales::percent) +
     ggplot2::scale_color_manual(values = c("black", "red")) +
     ggplot2::expand_limits(y = c(0, 1))
 }
-
-#' Plot Probabilities
-#'
-#' Plots the key probabilities.
-#'
-#' @param data1 The first data to plot.
-#' @param data2 The second data to plot.
-#' @return A ggplot2 object.
-#' @export
-plot_probs <- function(data1, data2) {
-  data1 %<>% check_data3(values = list(
-    Species = factor(1),
-    Parameter = factor(1),
-    estimate = c(0, 1),
-    lower = c(0, 1),
-    upper = c(0, 1)), select = TRUE, min_row = 4)
-
-  data2 %<>% check_data3(values = list(
-    Species = factor(1),
-    Parameter = factor(1),
-    estimate = c(0, 1),
-    lower = c(0, 1),
-    upper = c(0, 1)), select = TRUE, min_row = 4)
-
-  data1$Species %<>% as.character()
-  data2$Species %<>% as.character()
-
-  data <- dplyr::bind_rows(data1, data2)
-  data$Species %<>% factor(levels = c(data1$Species[1], data2$Species[1]))
-
-  ggplot2::ggplot(data = data, ggplot2::aes_(x = ~Parameter, y = ~estimate)) +
-    ggplot2::geom_pointrange(ggplot2::aes_(ymin = ~lower, ymax = ~upper, color = ~Species),
-                             position = ggplot2::position_dodge(width = 0.25)) +
-    ggplot2::scale_x_discrete(name = "Parameter") +
-    ggplot2::scale_y_continuous(name = "Probability (%)", labels = scales::percent) +
-    ggplot2::scale_color_manual(values = c("black", "red")) +
-    ggplot2::expand_limits(y = c(0, 1)) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1))
-}
-
-#' Plot Point Range
-#'
-#' @param data The data frame to plot.
-#' @param x A string specifying the column to plot on the x-axis.
-#'
-#' @return A ggplot object.
-#' @export
-plot_pointrange <- function(data, x) {
-  check_string(x)
-
-  check_data1(data, values = list(
-    estimate = 1,
-    lower = 1,
-    upper = 1), min_row = 1)
-
-  ggplot2::ggplot(data = data, ggplot2::aes_string(x = x, y = "estimate")) +
-    ggplot2::geom_pointrange(ggplot2::aes_string(ymin = "lower", ymax = "upper"))
-}
-

@@ -108,14 +108,18 @@ survival_model <- function(model) {
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
-    logit(eMoving[i]) <- bMovingSeason[Season[i]]
-    logit(eRecapture[i]) <- bRecapture
-    logit(eMortality[i]) <- bMortality + bMortalityPeriod[Period[i]]
-    eMortalitySeason[i] <- 1-(1-eMortality[i])^(1/nSeason)
-    logit(eMortalitySpawning[i]) <- bMortality + bMortalitySpawning
-    eMortalitySpawningSeason[i] <- 1-(1-eMortalitySpawning[i])^(1/nSeason)
-    eMortalitySpawningAnnual[i] <- 1-(1-eMortalitySeason[i])^(nSeason-1) * (1-eMortalitySpawningSeason[i])
+    logit(eMoving[i]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[i]
+    logit(eRecapture[i]) <- bRecapture + bRecaptureYear * Year[i]
+    logit(eSurvival[i]) <- bSurvival + bSurvivalSpawning * Spawned[i] + bSurvivalYear * Year[i]
+
+    logit(eSurvivalSpawner[i]) <- bSurvival + bSurvivalSpawning + bSurvivalYear * Year[i]
+    logit(eSurvivalNonspawner[i]) <- bSurvival + bSurvivalYear * Year[i]
+
+    eRecaptureAnnual[i] <- 1 - (1 - eRecapture[i])^4
+    eSurvivalAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * Spawned[i] + eSurvivalNonspawner[i] * (1 - Spawned[i]))
+    eSurvivalLengthAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * eSpawning[i] + eSurvivalNonspawner[i] * (1 - eSpawning[i]))
   }
+  eMortalityLengthAnnual <- 1 - eSurvivalLengthAnnual
 }",
              gen_inits = function(data) {
 
@@ -145,7 +149,7 @@ derived_code = "data{
              modify_data = function(data) {
 
                df <- as.data.frame(data[c("Capture", "Period", "PeriodCapture",
-                                          "Monitored", "Moved", "Recaptured", "Year", "Season",
+                                          "Monitored", "Moved", "Recaptured", "Year",
                                           "Spawned", "SpawningPeriod", "Length")])
 
                data$SpawningPeriod <- reshape2::acast(df, Capture ~ Period, value.var = "SpawningPeriod")
@@ -153,9 +157,6 @@ derived_code = "data{
 
                data$Year <- reshape2::acast(df, Capture ~ Period, value.var = "Year")
                data$Year <- data$Year[1,]
-
-               data$Season <- reshape2::acast(df, Capture ~ Period, value.var = "Season")
-               data$Season <- data$Season[1,]
 
                data$PeriodCapture <- reshape2::acast(df, Capture ~ Period, value.var = "PeriodCapture")
                data$PeriodCapture <- apply(data$PeriodCapture, MARGIN = 1, FUN = min, na.rm = TRUE)
@@ -176,7 +177,7 @@ derived_code = "data{
                data
              },
              select_data = c("Capture", "PeriodCapture",
-                             "Period", "Year*", "Season",
+                             "Period", "Year*",
                              "Monitored", "Moved", "Recaptured",
                              "Spawned", "SpawningPeriod", "subtract600divide100(Length)"),
 monitor = "^([^de]|.[^A-Z])"
@@ -228,8 +229,7 @@ analyse_survival <- function(data, model = "final", niters = 10^5, mode = "curre
       Removed = c(TRUE, NA),
       Released = c(TRUE, NA),
       SpawningPeriod = TRUE,
-      Spawned = c(TRUE, NA),
-      Season = factor(1)),
+      Spawned = c(TRUE, NA)),
     key = c("Capture", "Period"), select = TRUE)
 
   jaggernaut::jags_analysis(survival_model(model = model),
@@ -252,9 +252,10 @@ tagloss_model_code <- function(comments = TRUE) {
   model_code <- "
 model{
   bTagLoss ~ dunif(0, 1)
+  bTagLoss2 <- bTagLoss^2
 
   for (i in 1:length(Tags)) {
-    Tags[i] ~ dbin(1 - bTagLoss[i], 2) T(1, )
+    Tags[i] ~ dbin(1 - bTagLoss, 2) T(1, )
   }
 }"
   ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
@@ -266,26 +267,22 @@ tagloss_model <- function() {
 
 #' Analyse Tag Loss
 #'
-#' Analyses tag loss using a simple Bayesian zero-truncated binomial tag-loss model.
+#' Analyses tag loss data using a simple Bayesian zero-truncated binomial tag-loss model.
 #'
 #' To view the full model description
 #' in the JAGS dialect of the BUGS language use \code{\link{tagloss_model_code}}.
 #'
-#' The data must be a data frame with a single column Tags where the permitted values are 1 and 2.
-#'
-#' @param data A \code{data.frame} of the tag data to analyse.
+#' @param table A table of the number of recaptures with $100 and $10 tags.
 #' @param niters An integer of the minimum number of MCMC iterations to
 #' perform.
 #' @param mode A character element indicating the mode for the analysis.
 #' @return A jags_analysis object.
 #' @export
-analyse_tagloss <- function(data, niters = 10^3, mode = "current") {
-  assert_that(is.data.frame(data))
+analyse_tagloss <- function(table, niters = 10^3, mode = "current") {
   assert_that(is.count(niters) && noNA(niters))
+  assert_that(is.table(table))
 
-  data %<>% check_data3(
-    list(
-      Tags = c(1L, 2L)), select = TRUE)
+  data <- dplyr::data_frame(Tags = rep.int(c(2L, 1L), times = c(table[1,1], table[1,2] + table[2,1])))
 
   jaggernaut::jags_analysis(tagloss_model(), data, niters = niters, mode = mode)
 }

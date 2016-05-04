@@ -12,11 +12,10 @@ library(scales)
 library(lexr)
 library(klexr)
 
-if(F) {
-  jaggernaut::opts_jagr(mode = "report")
-  doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
-  jaggernaut::opts_jagr(parallel = TRUE)
-} else(stop())
+jaggernaut::opts_jagr(mode = "debug")
+doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
+jaggernaut::opts_jagr(parallel = TRUE)
+stop()
 
 #' for additional information on a function enter: ?function_name
 
@@ -82,9 +81,6 @@ rainbow_trout %<>% make_analysis_data(
   spawning = spawning_rb, growth = growth_vb, linf = 1000, k = 0.19
 )
 
-# print JAGS model code for tag loss model
-cat(tagloss_model_code())
-
 #' convert to data frames ready for analysis
 bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
@@ -117,56 +113,95 @@ dev.off()
 cat(survival_model_code(model = "final"))
 
 #' analyse bull trout data using final survival model
-bull_trout <- analyse_survival(bull_trout, model = "final")
+survival_bt <- analyse_survival(bull_trout, model = "final")
 
-#' save bull trout analysis to results
-saveRDS(bull_trout, "results/bull_trout.rds")
+#' save bull trout survival analysis to results
+saveRDS(survival_bt, "results/survival_bt.rds")
 
-#' print bull trout coefficient table
-summary(bull_trout)
+#' print bull trout survival coefficient table
+summary(survival_bt)
 
-#' save bull trout traceplots
-pdf("results/traceplots_bt.pdf")
-plot(bull_trout)
+#' save bull trout survival traceplots
+pdf("results/traceplots_survival_bt.pdf")
+plot(survival_bt)
 dev.off()
 
 #' analyse rainbow trout data using final survival model
-rainbow_trout %<>% analyse_survival(model = "final")
+survival_rb <- analyse_survival(rainbow_trout, model = "final")
 
-#' save rainbow trout analysis to results
-saveRDS(rainbow_trout, "results/rainbow_trout.rds")
+#' save rainbow trout survival analysis to results
+saveRDS(survival_rb, "results/survival_rb.rds")
 
-#' print rainbow trout coefficient table
-summary(rainbow_trout)
+#' print rainbow trout survival coefficient table
+summary(survival_rb)
 
 #' save rainbow trout traceplots
-pdf("results/traceplots_rb.pdf")
-plot(rainbow_trout)
+pdf("results/traceplots_survival_rb.pdf")
+plot(survival_rb)
 dev.off()
 
-#
-# mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
-# plot_pointrange(mort_period_bt, "Period")
+movement_bt <- predict(survival_bt, parm = "eMoving", newdata = "SpawningPeriod")
+movement_rb <- predict(survival_rb, parm = "eMoving", newdata = "SpawningPeriod")
+png("results/movement.png", width = 4, height = 3, units = "in", res = 900)
+plot_probability(movement_bt, movement_rb, x = "SpawningPeriod", xlab = "Spawning Season", ylab = "Seasonal Movement (%)")
+dev.off()
 
-#' # predict and plot key parameters
-#' probs_bt <- predict_probs(bull_trout)
-#' probs_rb <- predict_probs(rainbow_trout)
-#' png("results/Figure_7.png", width = 4, height = 4, units = "in", res = 900)
-#' plot_probs(probs_bt, probs_rb)
-#' dev.off()
-#'
-#' # predict and plot probability of spawning by length
-#' spawn_bt <- predict(bull_trout, parm = "eSpawning",
-#'                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-#' spawn_rb <- predict(rainbow_trout, parm = "eSpawning",
-#'                        newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
-#' png("results/Figure_8.png", width = 4, height = 3, units = "in", res = 900)
-#' plot_spawning(spawn_bt, spawn_rb)
-#' dev.off()
-#'
+spawning_bt <- predict(survival_bt, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
+spawning_rb <- predict(survival_rb, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)))
+png("results/spawning.png", width = 4, height = 3, units = "in", res = 900)
+plot_probability(spawning_bt, spawning_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Spawning (%)")
+dev.off()
+
+recapture_bt <- predict(survival_bt, parm = "eRecaptureAnnual", newdata = "Year")
+recapture_rb <- predict(survival_rb, parm = "eRecaptureAnnual", newdata = "Year")
+png("results/recapture.png", width = 4, height = 3, units = "in", res = 900)
+plot_probability(recapture_bt, recapture_rb, x = "Year", ylab = "Annual Recapture (%)")
+dev.off()
+
+surv_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = c("Year", "Spawned"))
+surv_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = c("Year", "Spawned"))
+png("results/survival.png", width = 6, height = 3, units = "in", res = 900)
+plot_probability(surv_bt, surv_rb, x = "Year", ylab = "Annual Survival (%)") +
+  facet_wrap(~Spawned, nrow = 1, labeller = "label_both")
+dev.off()
+
+mort_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = c("Length"))
+mort_rb <- predict(survival_rb, parm = "eMortalityLengthAnnual", newdata = c("Length"))
+png("results/mortality.png", width = 4, height = 3, units = "in", res = 900)
+plot_probability(mort_bt, mort_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Annual Natural Mortality (%)")
+dev.off()
+
 #' save list of summary information
-summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
+summary <- summarise_results(lex, detect, survival_bt, survival_rb)
 saveRDS(summary, "results/summary.rds")
 
+# print JAGS model code for tag loss model
+cat(tagloss_model_code())
 
+#' analyse bull trout data using tagloss model
+tagloss_bt <- analyse_tagloss(summary$recap_bt)
 
+#' save bull trout tagloss analysis to results
+saveRDS(tagloss_bt, "results/tagloss_bt.rds")
+
+#' print bull trout tagloss coefficient table
+summary(tagloss_bt)
+
+#' save bull trout tagloss traceplots
+pdf("results/traceplots_tagloss_bt.pdf")
+plot(tagloss_bt)
+dev.off()
+
+#' analyse rainbow trout data using tagloss model
+tagloss_rb <- analyse_tagloss(summary$recap_rb)
+
+#' save rainbow trout tagloss analysis to results
+saveRDS(tagloss_rb, "results/tagloss_rb.rds")
+
+#' print rainbow trout tagloss coefficient table
+summary(tagloss_rb)
+
+#' save rainbow trout tagloss traceplots
+pdf("results/traceplots_tagloss_rb.pdf")
+plot(tagloss_rb)
+dev.off()
