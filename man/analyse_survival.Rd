@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyse.R
 \name{analyse_survival}
 \alias{analyse_survival}
-\title{Analyse Detections and Recaptures}
+\title{Analyse Survival}
 \usage{
 analyse_survival(data, model = "final", niters = 10^5, mode = "current")
 }

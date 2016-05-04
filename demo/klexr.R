@@ -12,6 +12,12 @@ library(scales)
 library(lexr)
 library(klexr)
 
+if(F) {
+  jaggernaut::opts_jagr(mode = "report")
+  doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
+  jaggernaut::opts_jagr(parallel = TRUE)
+} else(stop())
+
 #' for additional information on a function enter: ?function_name
 
 #' create directory to store results
@@ -24,7 +30,7 @@ lex %<>% combine_sections_lex_data(list("S01" = c("S01", "S05", "S06"),
                                         "S18" = c("S18", "S21")))
 
 #' plot a map of the study area
-png("results/Figure_1.png", width = 3, height = 6, units = "in", res = 900)
+png("results/area.png", width = 3, height = 6, units = "in", res = 900)
 plot_section(lex)
 dev.off()
 
@@ -41,17 +47,17 @@ detect <- make_detect_data(lex, capture = capture, recapture = recapture,
                            recovery_days = 30L)
 
 #' plot Kootenay Lake by color-coded section
-png("results/Figure_2.png", width = 3, height = 6, units = "in", res = 900)
+png("results/section.png", width = 3, height = 6, units = "in", res = 900)
 plot_detect_section(detect)
 dev.off()
 
 #' plot percent receiver coverage by color-coded section
-png("results/Figure_3.png", width = 4, height = 4, units = "in", res = 900)
+png("results/coverage.png", width = 4, height = 4, units = "in", res = 900)
 plot_detect_coverage(detect)
 dev.off()
 
-#' plot detections by fish, species, date and color-coded section.
-png("results/Figure_4.png", width = 6, height = 8, units = "in", res = 900)
+#' plot daily detections by fish, species, date and color-coded section.
+png("results/daily.png", width = 6, height = 8, units = "in", res = 900)
 plot_detect_overview(detect)
 dev.off()
 
@@ -76,59 +82,55 @@ rainbow_trout %<>% make_analysis_data(
   spawning = spawning_rb, growth = growth_vb, linf = 1000, k = 0.19
 )
 
+# print JAGS model code for tag loss model
+cat(tagloss_model_code())
+
 #' convert to data frames ready for analysis
 bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
 
-# rename Reported as Recaptured
-bull_trout %<>% rename(Recaptured = Reported)
-rainbow_trout %<>% rename(Recaptured = Reported)
-
-#' add season column
-bull_trout$Season <- season(bull_trout$Month)
-rainbow_trout$Season <- season(rainbow_trout$Month)
+# rename Reported as Recaptured and add Season column
+bull_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
+rainbow_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
 
 #' plot analysis data for bull trout
-png("results/Figure_5.png", width = 6, height = 6, units = "in", res = 900)
+png("results/seasonal_bt.png", width = 6, height = 6, units = "in", res = 900)
 plot_analysis_data(bull_trout)
 dev.off()
 
 #' plot analysis data for rainbow trout
-png("results/Figure_6.png", width = 6, height = 8, units = "in", res = 900)
+png("results/seasonal_rb.png", width = 6, height = 8, units = "in", res = 900)
 plot_analysis_data(rainbow_trout)
 dev.off()
 
 #' plot analysis lengths for bull trout
-png("results/FigureS01.png", width = 3, height = 3, units = "in", res = 900)
+png("results/lengths_bt.png", width = 3, height = 3, units = "in", res = 900)
 plot_analysis_length(bull_trout)
 dev.off()
 
 #' plot analysis lengths for rainbow trout
-png("results/FigureS02.png", width = 3, height = 3, units = "in", res = 900)
+png("results/lengths_rb.png", width = 3, height = 3, units = "in", res = 900)
 plot_analysis_length(rainbow_trout)
 dev.off()
 
-#' analyse bull trout data using mortality model
-bull_trout %<>% analyse_survival(model = "final")
-#
-# mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
-# plot_pointrange(mort_period_bt, "Period")
+# print JAGS model code for final survival model
+cat(survival_model_code(model = "final"))
 
-#' save rainbow trout analysis to results
+#' analyse bull trout data using final survival model
+bull_trout <- analyse_survival(bull_trout, model = "final")
+
+#' save bull trout analysis to results
 saveRDS(bull_trout, "results/bull_trout.rds")
 
 #' print bull trout coefficient table
 summary(bull_trout)
-
-# print JAGS model code for BT mortality model
-cat(model_code(bull_trout))
 
 #' save bull trout traceplots
 pdf("results/traceplots_bt.pdf")
 plot(bull_trout)
 dev.off()
 
-#' analyse rainbow trout data using mortality model
+#' analyse rainbow trout data using final survival model
 rainbow_trout %<>% analyse_survival(model = "final")
 
 #' save rainbow trout analysis to results
@@ -141,6 +143,10 @@ summary(rainbow_trout)
 pdf("results/traceplots_rb.pdf")
 plot(rainbow_trout)
 dev.off()
+
+#
+# mort_period_bt <- predict(bull_trout2, parm = "eMortality", newdata = "Period")
+# plot_pointrange(mort_period_bt, "Period")
 
 #' # predict and plot key parameters
 #' probs_bt <- predict_probs(bull_trout)
@@ -158,6 +164,9 @@ dev.off()
 #' plot_spawning(spawn_bt, spawn_rb)
 #' dev.off()
 #'
-#' #' save list of summary information
-#' summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
-#' saveRDS(summary, "results/summary.rds")
+#' save list of summary information
+summary <- summarise_results(lex, detect, bull_trout, rainbow_trout)
+saveRDS(summary, "results/summary.rds")
+
+
+

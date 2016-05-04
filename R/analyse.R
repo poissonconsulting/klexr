@@ -14,15 +14,13 @@ subtract600divide100 <- function(x) {
 #' Returns a string of the JAGS code
 #' defining the survival model.
 #'
-#' @param species A string specifying the species ("Bull Trout", "Rainbow Trout")
 #' @param model A string specifying the model type ("base", "full" and "final")
 #' @param comments A flag indicating whether to include comments.
 #' @return A string of the JAGS model code.
 #' @examples
 #' cat(survival_model_code())
 #' @export
-survival_model_code <- function(species, model = "final", comments = TRUE) {
-  check_scalar(species, c("Bull Trout", "Rainbow Trout", "Rainbow Trout"))
+survival_model_code <- function(model = "final", comments = TRUE) {
   check_scalar(model, c("base", "full", "final"))
   check_flag(comments)
 
@@ -104,9 +102,9 @@ bSurvivalYear * Year[j]
   ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
 }
 
-survival_model <- function(species, model) {
+survival_model <- function(model) {
 
-  jaggernaut::jags_model(survival_model_code(species = species, model = model),
+  jaggernaut::jags_model(survival_model_code(model = model),
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
@@ -185,7 +183,7 @@ monitor = "^([^de]|.[^A-Z])"
   )
 }
 
-#' Analyse Detections and Recaptures
+#' Analyse Survival
 #'
 #' Analyses detection and recapture data using a Bayesian individual multistate
 #' state-space formulation of the Cormack-Jolly-Seber (CJS) survival model
@@ -234,6 +232,60 @@ analyse_survival <- function(data, model = "final", niters = 10^5, mode = "curre
       Season = factor(1)),
     key = c("Capture", "Period"), select = TRUE)
 
-  jaggernaut::jags_analysis(survival_model(species = as.character(data$Species[1]), model = model),
+  jaggernaut::jags_analysis(survival_model(model = model),
                             data, niters = niters, mode = mode)
+}
+
+#' Tag Loss Model Code
+#'
+#' Returns a string of the JAGS code
+#' defining the tag loss model.
+#'
+#' @param comments A flag indicating whether to include comments.
+#' @return A string of the JAGS model code.
+#' @examples
+#' cat(tagloss_model_code())
+#' @export
+tagloss_model_code <- function(comments = TRUE) {
+  check_flag(comments)
+
+  model_code <- "
+model{
+  bTagLoss ~ dunif(0, 1)
+
+  for (i in 1:length(Tags)) {
+    Tags[i] ~ dbin(1 - bTagLoss[i], 2) T(1, )
+  }
+}"
+  ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
+}
+
+tagloss_model <- function() {
+  jaggernaut::jags_model(tagloss_model_code())
+}
+
+#' Analyse Tag Loss
+#'
+#' Analyses tag loss using a simple Bayesian zero-truncated binomial tag-loss model.
+#'
+#' To view the full model description
+#' in the JAGS dialect of the BUGS language use \code{\link{tagloss_model_code}}.
+#'
+#' The data must be a data frame with a single column Tags where the permitted values are 1 and 2.
+#'
+#' @param data A \code{data.frame} of the tag data to analyse.
+#' @param niters An integer of the minimum number of MCMC iterations to
+#' perform.
+#' @param mode A character element indicating the mode for the analysis.
+#' @return A jags_analysis object.
+#' @export
+analyse_tagloss <- function(data, niters = 10^3, mode = "current") {
+  assert_that(is.data.frame(data))
+  assert_that(is.count(niters) && noNA(niters))
+
+  data %<>% check_data3(
+    list(
+      Tags = c(1L, 2L)), select = TRUE)
+
+  jaggernaut::jags_analysis(tagloss_model(), data, niters = niters, mode = mode)
 }
