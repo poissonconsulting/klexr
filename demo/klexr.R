@@ -12,10 +12,10 @@ library(scales)
 library(lexr)
 library(klexr)
 
-jaggernaut::opts_jagr(mode = "debug")
-doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
-jaggernaut::opts_jagr(parallel = TRUE)
-stop()
+# jaggernaut::opts_jagr(mode = "report")
+# doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
+# jaggernaut::opts_jagr(parallel = TRUE)
+# stop()
 
 #' for additional information on a function enter: ?function_name
 
@@ -171,15 +171,23 @@ png("results/mortality.png", width = 4, height = 3, units = "in", res = 900)
 plot_probability(mort_bt, mort_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Annual Natural Mortality (%)")
 dev.off()
 
-#' save list of summary information
+#' create list of summary information
 summary <- summarise_results(lex, detect, survival_bt, survival_rb)
-saveRDS(summary, "results/summary.rds")
 
 # print JAGS model code for tag loss model
 cat(tagloss_model_code())
 
 #' analyse bull trout data using tagloss model
 tagloss_bt <- analyse_tagloss(summary$recap_bt)
+#' analyse rainbow trout data using tagloss model
+tagloss_rb <- analyse_tagloss(summary$recap_rb)
+
+# add tagloss coefficent estimates to summary information
+summary$tagloss_bt <- coef(tagloss_bt)
+summary$tagloss_rb <- coef(tagloss_rb)
+
+#' save list of summary information
+saveRDS(summary, "results/summary.rds")
 
 #' save bull trout tagloss analysis to results
 saveRDS(tagloss_bt, "results/tagloss_bt.rds")
@@ -191,9 +199,6 @@ summary(tagloss_bt)
 pdf("results/traceplots_tagloss_bt.pdf")
 plot(tagloss_bt)
 dev.off()
-
-#' analyse rainbow trout data using tagloss model
-tagloss_rb <- analyse_tagloss(summary$recap_rb)
 
 #' save rainbow trout tagloss analysis to results
 saveRDS(tagloss_rb, "results/tagloss_rb.rds")
