@@ -12,11 +12,6 @@ library(scales)
 library(lexr)
 library(klexr)
 
-jaggernaut::opts_jagr(mode = "report")
-doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
-jaggernaut::opts_jagr(parallel = TRUE)
-stop()
-
 #' for additional information on a function enter: ?function_name
 
 #' create directory to store results

@@ -51,8 +51,8 @@ model{
   sdMovingSpawningPeriod <- iMovingSpawningPeriod * 3 + (1-iMovingSpawningPeriod) * 3 * kC
   bMovingSpawningPeriod ~ dnorm(0, sdMovingSpawningPeriod^-2)
 
-  iSurvivalSpawing ~ dbern(kI)
-  sdSurvivalSpawning <- iSurvivalSpawing * 3 + (1-iSurvivalSpawing) * 3 * kC
+  iSurvivalSpawning ~ dbern(kI)
+  sdSurvivalSpawning <- iSurvivalSpawning * 3 + (1-iSurvivalSpawning) * 3 * kC
   bSurvivalSpawning ~ dnorm(0, sdSurvivalSpawning^-2)
 
   iRecaptureYear ~ dbern(kI)
