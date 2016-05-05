@@ -12,6 +12,10 @@ library(scales)
 library(lexr)
 library(klexr)
 
+#jaggernaut::opts_jagr(mode = "debug")
+#doParallel::registerDoParallel(jaggernaut::opts_jagr()$nchains)
+#jaggernaut::opts_jagr(parallel = TRUE)
+
 #' for additional information on a function enter: ?function_name
 
 #' create directory to store results
@@ -186,12 +190,12 @@ dev.off()
 summary <- summarise_results(lex, detect, survival_bt, survival_rb)
 
 # add plot information to summary
-summary$movement_spawningseason <- movement_spawningseason
-summary$spawning_length <- spawning_length
-summary$recapture_year <- recapture_year
-summary$survival_year <- survival_year
-summary$survival_spawning <- survival_spawning
-summary$mortality_length <- mortality_length
+summary$movement_spawningseason <- movement_spawningseason$data
+summary$spawning_length <- spawning_length$data
+summary$recapture_year <- recapture_year$data
+summary$survival_year <- survival_year$data
+summary$survival_spawning <- survival_spawning$data
+summary$mortality_length <- mortality_length$data
 
 # print JAGS model code for tag loss model
 cat(tagloss_model_code())
