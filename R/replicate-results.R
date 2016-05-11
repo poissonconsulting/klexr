@@ -1,3 +1,22 @@
+#' Yes or No
+#'
+#' Asks user a question and returns a TRUE or FALSE to indicate
+#' whether user answered yes or no.
+#' Modified from devtools package internal function so that yes returns TRUE.
+#'
+#' @param question a character scalar of the question to ask the user
+#' @return A logical scalar indicating whether reponse was yes (TRUE) or no (FALSE).
+yesno <- function(question) {
+  yeses <- c("Yes", "Yup", "Yeah")
+  nos <- c("No", "No way", "Nope")
+
+  cat(question)
+  qs <- c(sample(yeses, 1), sample(nos, 2))
+  rand <- sample(length(qs))
+
+  menu(qs[rand]) == which(rand == 1)
+}
+
 #' Replicate Results
 #'
 #' Replicates the results by running the package demo. The results are saved
@@ -49,12 +68,16 @@ replicate_results <- function(mode = "debug", res = 150L, parallel = TRUE) {
   }
   jaggernaut::opts_jagr(parallel = parallel)
 
-  saveRDS(mode, "results/mode.rds")
+  if (yesno("Create a folder results in the working directory?")) {
+    dir.create("results", showWarnings = FALSE, recursive = TRUE)
 
-  res <- options(res = res)
-  on.exit(options(res = res$res), add = TRUE)
+    saveRDS(mode, "results/mode.rds")
 
-  utils::demo("klexr", ask = FALSE)
+    res <- options(res = res)
+    on.exit(options(res = res$res), add = TRUE)
 
+    utils::demo("klexr", ask = FALSE)
+
+  }
   invisible()
 }
