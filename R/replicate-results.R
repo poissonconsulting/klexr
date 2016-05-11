@@ -13,11 +13,13 @@
 #' \code{mode = "paper"}.
 #'
 #' @param mode A string specifying the mode for the analyses.
+#' @param res A count indicating the nominal resolution in ppi.
 #' @param parallel A flag indicating whether to run the chains in parallel.
 #' @export
-replicate_results <- function(mode = "debug", parallel = FALSE) {
+replicate_results <- function(mode = "debug", res = 150L, parallel = TRUE) {
 
   assert_that(is.string(mode))
+  assert_that(is.count(res))
   assert_that(is.flag(parallel))
 
   requireNamespace("foreach")
@@ -47,8 +49,12 @@ replicate_results <- function(mode = "debug", parallel = FALSE) {
   }
   jaggernaut::opts_jagr(parallel = parallel)
 
-  demo("klexr", ask = FALSE)
-
   saveRDS(mode, "results/mode.rds")
+
+  res <- options(res = res)
+  on.exit(options(res = res$res), add = TRUE)
+
+  utils::demo("klexr", ask = FALSE)
+
   invisible()
 }

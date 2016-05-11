@@ -11,7 +11,7 @@ Description: The companion analysis package for Thorley et al.'s manuscript
 License: MIT + file LICENSE
 URL: https://github.com/poissonconsulting/klexr
 LazyData: true
-SystemRequirements: jags (>= 4.0.1)
+SystemRequirements: jags (>= 4.2.0)
 Depends:
     R (>= 3.1.0)
 Imports:
@@ -31,6 +31,7 @@ Imports:
     plyr,
     reshape2,
     scales,
+    stats,
     tidyr,
     whisker
 RoxygenNote: 5.0.1

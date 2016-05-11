@@ -4,6 +4,7 @@
 #' ---
 #'
 #' ensure required packages are loaded
+library(stats)
 library(magrittr)
 library(dplyr)
 library(jaggernaut)
@@ -28,7 +29,7 @@ lex %<>% combine_sections_lex_data(list("S01" = c("S01", "S05", "S06"),
                                         "S18" = c("S18", "S21")))
 
 #' plot a map of the study area
-png("results/area.png", width = 3, height = 6, units = "in", res = 900)
+png("results/area.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
 plot_section(lex)
 dev.off()
 
@@ -45,17 +46,17 @@ detect <- make_detect_data(lex, capture = capture, recapture = recapture,
                            recovery_days = 30L)
 
 #' plot Kootenay Lake by color-coded section
-png("results/section.png", width = 3, height = 6, units = "in", res = 900)
+png("results/section.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
 plot_detect_section(detect)
 dev.off()
 
 #' plot percent receiver coverage by color-coded section
-png("results/coverage.png", width = 4, height = 4, units = "in", res = 900)
+png("results/coverage.png", width = 4, height = 4, units = "in", res = getOption("res", 150))
 plot_detect_coverage(detect)
 dev.off()
 
 #' plot daily detections by fish, species, date and color-coded section.
-png("results/daily.png", width = 6, height = 8, units = "in", res = 900)
+png("results/daily.png", width = 6, height = 8, units = "in", res = getOption("res", 150))
 plot_detect_overview(detect)
 dev.off()
 
@@ -89,22 +90,22 @@ bull_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
 rainbow_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
 
 #' plot analysis data for bull trout
-png("results/seasonal_bt.png", width = 6, height = 6, units = "in", res = 900)
+png("results/seasonal_bt.png", width = 6, height = 6, units = "in", res = getOption("res", 150))
 plot_analysis_data(bull_trout)
 dev.off()
 
 #' plot analysis data for rainbow trout
-png("results/seasonal_rb.png", width = 6, height = 8, units = "in", res = 900)
+png("results/seasonal_rb.png", width = 6, height = 8, units = "in", res = getOption("res", 150))
 plot_analysis_data(rainbow_trout)
 dev.off()
 
 #' plot analysis lengths for bull trout
-png("results/lengths_bt.png", width = 3, height = 3, units = "in", res = 900)
+png("results/lengths_bt.png", width = 3, height = 3, units = "in", res = getOption("res", 150))
 plot_analysis_length(bull_trout)
 dev.off()
 
 #' plot analysis lengths for rainbow trout
-png("results/lengths_rb.png", width = 3, height = 3, units = "in", res = 900)
+png("results/lengths_rb.png", width = 3, height = 3, units = "in", res = getOption("res", 150))
 plot_analysis_length(rainbow_trout)
 dev.off()
 
@@ -144,21 +145,21 @@ values = data_frame(Year = 2010L, Length = 650L, SpawningPeriod = FALSE, Spawned
 pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 movement_spawningseason <- plot_probability(pred_bt, pred_rb, x = "SpawningPeriod", xlab = "Spawning Season", ylab = "Seasonal Movement (%)")
-png("results/movement_spawningseason.png", width = 4, height = 3, units = "in", res = 900)
+png("results/movement_spawningseason.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 movement_spawningseason
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 spawning_length <- plot_probability(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Spawning (%)")
-png("results/spawning_length.png", width = 4, height = 3, units = "in", res = 900)
+png("results/spawning_length.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 spawning_length
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 pred_rb <- predict(survival_rb, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 recapture_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Recapture (%)")
-png("results/recapture_year.png", width = 4, height = 3, units = "in", res = 900)
+png("results/recapture_year.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 recapture_year
 dev.off()
 
@@ -168,21 +169,21 @@ pred_bt$Year %<>% factor()
 pred_rb$Year %<>% factor()
 pred_bt %<>% filter(Year != "2008")
 survival_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Survival (%)")
-png("results/survival_year.png", width = 4, height = 3, units = "in", res = 900)
+png("results/survival_year.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 survival_year
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 pred_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 survival_spawning <- plot_probability(pred_bt, pred_rb, x = "Spawned", ylab = "Annual Survival (%)")
-png("results/survival_spawning.png", width = 4, height = 3, units = "in", res = 900)
+png("results/survival_spawning.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 survival_spawning
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eMortalityLengthAnnual", data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 mortality_length <- plot_probability(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Annual Natural Mortality (%)")
-png("results/mortality_length.png", width = 4, height = 3, units = "in", res = 900)
+png("results/mortality_length.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 mortality_length
 dev.off()
 
