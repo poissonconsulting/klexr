@@ -4,7 +4,8 @@
 \alias{replicate_results}
 \title{Replicate Results}
 \usage{
-replicate_results(mode = "debug", res = 150L, parallel = TRUE)
+replicate_results(mode = "debug", res = 150L, parallel = TRUE,
+  ask = TRUE)
 }
 \arguments{
 \item{mode}{A string specifying the mode for the analyses.}
@@ -12,6 +13,8 @@ replicate_results(mode = "debug", res = 150L, parallel = TRUE)
 \item{res}{A count indicating the nominal resolution in ppi.}
 
 \item{parallel}{A flag indicating whether to run the chains in parallel.}
+
+\item{ask}{A flag indicating whether to ask before creating results directory.}
 }
 \description{
 Replicates the results by running the package demo. The results are saved

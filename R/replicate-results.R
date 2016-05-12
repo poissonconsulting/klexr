@@ -14,7 +14,7 @@ yesno <- function(question) {
   qs <- c(sample(yeses, 1), sample(nos, 2))
   rand <- sample(length(qs))
 
-  menu(qs[rand]) == which(rand == 1)
+  utils::menu(qs[rand]) == which(rand == 1)
 }
 
 #' Replicate Results
@@ -34,12 +34,14 @@ yesno <- function(question) {
 #' @param mode A string specifying the mode for the analyses.
 #' @param res A count indicating the nominal resolution in ppi.
 #' @param parallel A flag indicating whether to run the chains in parallel.
+#' @param ask A flag indicating whether to ask before creating results directory.
 #' @export
-replicate_results <- function(mode = "debug", res = 150L, parallel = TRUE) {
+replicate_results <- function(mode = "debug", res = 150L, parallel = TRUE, ask = TRUE) {
 
   assert_that(is.string(mode))
   assert_that(is.count(res))
   assert_that(is.flag(parallel))
+  assert_that(is.flag(ask))
 
   requireNamespace("foreach")
   requireNamespace("doParallel")
@@ -68,7 +70,7 @@ replicate_results <- function(mode = "debug", res = 150L, parallel = TRUE) {
   }
   jaggernaut::opts_jagr(parallel = parallel)
 
-  if (yesno("Create a folder results in the working directory?")) {
+  if (!ask || yesno("Create a folder results in the working directory?")) {
     dir.create("results", showWarnings = FALSE, recursive = TRUE)
 
     saveRDS(mode, "results/mode.rds")

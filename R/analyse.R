@@ -38,10 +38,10 @@ data {
   kC <- 10^-2
 }
 model{
-  bSpawning ~ dnorm(0, 3^-2)
-  bMoving ~ dnorm(0, 3^-2)
-  bRecapture ~ dnorm(0, 3^-2)
-  bSurvival ~ dnorm(0, 3^-2)
+  bSpawning ~ dnorm(0, 3^-2)                              # $\\beta_{\\kappa 0}$
+  bMoving ~ dnorm(0, 3^-2)                                # $\\beta_{\\delta 0}$
+  bRecapture ~ dnorm(0, 3^-2)                             # $\\beta_{\\rho 0}$
+  bSurvival ~ dnorm(0, 3^-2)                              # $\\beta_{\\phi 0}$
 
   iSpawningLength ~ dbern(kI)
   sdSpawningLength <- iSpawningLength * 3 + (1-iSpawningLength) * 3 * kC

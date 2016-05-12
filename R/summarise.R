@@ -102,6 +102,9 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   results$coef_bt <- stats::coef(bull_trout)
   results$coef_rb <- stats::coef(rainbow_trout)
 
+  results$coef_bt_latex <- stats::coef(bull_trout, latex = TRUE)
+  results$coef_rb_latex <- stats::coef(rainbow_trout, latex = TRUE)
+
   results$rhat_bt <- jaggernaut::convergence(bull_trout)
   results$rhat_rb <- jaggernaut::convergence(bull_trout)
 
