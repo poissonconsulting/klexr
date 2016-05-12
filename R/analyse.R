@@ -26,7 +26,7 @@ survival_model_code <- function(model = "final", comments = TRUE) {
 
   data <- list()
 
-  data$kI <- switch(model,
+  data$dKI <- switch(model,
          base = 0,
          full = 1,
          final = 0.5,
@@ -34,8 +34,8 @@ survival_model_code <- function(model = "final", comments = TRUE) {
 
   model_code <- "
 data {
-  kI <- {{kI}}
-  kC <- 10^-2
+  dKI <- {{dKI}}
+  dKC <- 10^-2
 }
 model{
   bSpawning ~ dnorm(0, 3^-2)                              # $\\beta_{\\kappa 0}$
@@ -43,25 +43,25 @@ model{
   bRecapture ~ dnorm(0, 3^-2)                             # $\\beta_{\\rho 0}$
   bSurvival ~ dnorm(0, 3^-2)                              # $\\beta_{\\phi 0}$
 
-  iSpawningLength ~ dbern(kI)
-  sdSpawningLength <- iSpawningLength * 3 + (1-iSpawningLength) * 3 * kC
-  bSpawningLength ~ dnorm(0, sdSpawningLength^-2)
+  iSpawningLength ~ dbern(dKI)                             # $\\gamma_{\\kappa L}$
+  dSDSpawningLength <- iSpawningLength * 3 + (1-iSpawningLength) * 3 * dKC
+  bSpawningLength ~ dnorm(0, dSDSpawningLength^-2)         # $\\beta_{\\kappa L}$
 
-  iMovingSpawningPeriod ~ dbern(kI)
-  sdMovingSpawningPeriod <- iMovingSpawningPeriod * 3 + (1-iMovingSpawningPeriod) * 3 * kC
-  bMovingSpawningPeriod ~ dnorm(0, sdMovingSpawningPeriod^-2)
+  iMovingSpawningPeriod ~ dbern(dKI)                       # $\\gamma_{\\delta S}$
+  dSDMovingSpawningPeriod <- iMovingSpawningPeriod * 3 + (1-iMovingSpawningPeriod) * 3 * dKC
+  bMovingSpawningPeriod ~ dnorm(0, dSDMovingSpawningPeriod^-2) # $\\beta_{\\delta S}$
 
-  iSurvivalSpawning ~ dbern(kI)
-  sdSurvivalSpawning <- iSurvivalSpawning * 3 + (1-iSurvivalSpawning) * 3 * kC
-  bSurvivalSpawning ~ dnorm(0, sdSurvivalSpawning^-2)
+  iSurvivalSpawning ~ dbern(dKI)                           # $\\gamma_{\\phi \\kappa}$
+  dSDSurvivalSpawning <- iSurvivalSpawning * 3 + (1-iSurvivalSpawning) * 3 * dKC
+  bSurvivalSpawning ~ dnorm(0, dSDSurvivalSpawning^-2)     # $\\beta_{\\phi \\kappa}$
 
-  iRecaptureYear ~ dbern(kI)
-  sdRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * kC
-  bRecaptureYear ~ dnorm(0, sdRecaptureYear^-2)
+  iRecaptureYear ~ dbern(dKI)                              # $\\gamma_{\\rho Y}$
+  dSDRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * dKC
+  bRecaptureYear ~ dnorm(0, dSDRecaptureYear^-2)           # $\\beta_{\\rho Y}$
 
-  iSurvivalYear ~ dbern(kI)
-  sdSurvivalYear <- iSurvivalYear * 3 + (1-iSurvivalYear) * 3 * kC
-  bSurvivalYear ~ dnorm(0, sdSurvivalYear^-2)
+  iSurvivalYear ~ dbern(dKI)                              # $\\gamma_{\\phi Y}$
+  dSDSurvivalYear <- iSurvivalYear * 3 + (1-iSurvivalYear) * 3 * dKC
+  bSurvivalYear ~ dnorm(0, dSDSurvivalYear^-2)            # $\\beta_{\\phi Y}$
 
   for (i in 1:nCapture){
     eAlive[i,PeriodCapture[i]] <- 1
