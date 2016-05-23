@@ -64,7 +64,7 @@ dev.off()
 bull_trout <- filter(detect$capture, Species == "Bull Trout")
 rainbow_trout <- filter(detect$capture, Species == "Rainbow Trout")
 
-# just keep main lake sections for plotting use
+# just keep main lake sections for plotting use and last detections
 section <- detect$section[!detect$section@data$Section %in% paste0("S", c(paste0("0", 1:6),19,33)),]
 
 #' plot habitat use by color-coded section for Bull Trout
@@ -76,6 +76,15 @@ dev.off()
 png("results/use_rb.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
 plot_use_detect(filter_detect_data(detect, capture = rainbow_trout, section = section))
 dev.off()
+
+#' get number of fish last detected at each main lake section
+last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout, section = section))
+last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout, section))
+
+#' save bull trout last detection sections to results
+saveRDS(last_bt, "results/last_bt.rds")
+#' save rainbow trout last detection sections to results
+saveRDS(last_rb, "results/last_rb.rds")
 
 #' define seasonal periods
 interval_period <- mutate(detect$interval, Season = season(Month),
