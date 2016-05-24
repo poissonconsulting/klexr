@@ -78,8 +78,11 @@ plot_use_detect(filter_detect_data(detect, capture = rainbow_trout, section = se
 dev.off()
 
 #' get number of fish last detected at each main lake section
-last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout, section = section))
-last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout, section))
+last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout, section = section), delay_days = 30L)
+last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout, section = section), delay_days = 30L)
+
+last_bt %<>% group_by(Section) %>% summarise(Fish = n())
+last_rb %<>% group_by(Section) %>% summarise(Fish = n())
 
 #' save bull trout last detection sections to results
 saveRDS(last_bt, "results/last_bt.rds")
