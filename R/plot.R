@@ -185,3 +185,42 @@ plot_probability <- function(data1, data2, x, xlab = x, ylab = "Probability (%)"
     ggplot2::scale_color_manual(values = c("black", "red")) +
     ggplot2::expand_limits(y = c(0, 1))
 }
+
+#' Plot Mortality
+#'
+#' Plots the mortality of x
+#'
+#' @param data1 The first data to plot.
+#' @param data2 The second data to plot.
+#' @param x A string of the column to plot on the x-axis.
+#' @param xlab A string of the x-axis name.
+#' @param ylab A string of the y-axis name.
+#' @return A ggplot2 object.
+#' @export
+plot_mortality <- function(data1, data2, x, xlab = x, ylab = "Mortality") {
+
+  data1 %<>% check_data1(values = list(
+    Species = factor(1),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), min_row = 2)
+
+  data2 %<>% check_data1(values = list(
+    Species = factor(1),
+    estimate = c(0, 1),
+    lower = c(0, 1),
+    upper = c(0, 1)), min_row = 2)
+
+  data1 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))
+  data2 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))
+
+  data <- dplyr::bind_rows(data1, data2)
+  data$Species %<>% factor(levels = c(data1$Species[1], data2$Species[1]))
+
+  ggplot2::ggplot(data = data, ggplot2::aes_string(x = x, y = "estimate",
+                                                   group = "Species", color = "Species")) +
+    plot_type(data, x, xlab) +
+    ggplot2::scale_y_continuous(name = ylab) +
+    ggplot2::scale_color_manual(values = c("black", "red")) +
+    ggplot2::expand_limits(y = 0)
+}

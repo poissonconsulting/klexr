@@ -207,7 +207,7 @@ dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eMortalityLengthAnnual", data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
-mortality_length <- plot_probability(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Annual Natural Mortality (%)")
+mortality_length <- plot_mortality(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Natural Mortality (M)")
 png("results/mortality_length.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
 mortality_length
 dev.off()

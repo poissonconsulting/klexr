@@ -118,8 +118,8 @@ derived_code = "data{
     eRecaptureAnnual[i] <- 1 - (1 - eRecapture[i])^4
     eSurvivalAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * Spawned[i] + eSurvivalNonspawner[i] * (1 - Spawned[i]))
     eSurvivalLengthAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * eSpawning[i] + eSurvivalNonspawner[i] * (1 - eSpawning[i]))
+    eMortalityLengthAnnual[i] <- exp(-eSurvivalLengthAnnual[i])
   }
-  eMortalityLengthAnnual <- 1 - eSurvivalLengthAnnual
 }",
              gen_inits = function(data) {
 
