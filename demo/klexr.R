@@ -6,6 +6,7 @@
 #' ensure required packages are loaded
 library(stats)
 library(magrittr)
+library(tidyr)
 library(dplyr)
 library(jaggernaut)
 library(ggplot2)
@@ -64,7 +65,25 @@ dev.off()
 bull_trout <- filter(detect$capture, Species == "Bull Trout")
 rainbow_trout <- filter(detect$capture, Species == "Rainbow Trout")
 
-# just keep main lake sections for plotting use and last detections
+#' get number of fish last detected at each section 120 days before tag expire with no recap
+last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout), delay_days = 120L)
+last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout), delay_days = 120L)
+
+last_bt %<>% mutate(Season = season(Date))
+last_rb %<>% mutate(Season = season(Date))
+
+last_bt %<>% group_by(Section, Season) %>% summarise(Fish = n())
+last_rb %<>% group_by(Section, Season) %>% summarise(Fish = n())
+
+last_bt %<>% spread(Season, Fish, fill = 0)
+last_rb %<>% spread(Season, Fish, fill = 0)
+
+#' save bull trout last detection sections to results
+saveRDS(last_bt, "results/last_bt.rds")
+#' save rainbow trout last detection sections to results
+saveRDS(last_rb, "results/last_rb.rds")
+
+# just keep main lake sections for plotting use
 section <- detect$section[!detect$section@data$Section %in% paste0("S", c(paste0("0", 1:6),19,33)),]
 
 #' plot habitat use by color-coded section for Bull Trout
@@ -76,18 +95,6 @@ dev.off()
 png("results/use_rb.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
 plot_use_detect(filter_detect_data(detect, capture = rainbow_trout, section = section))
 dev.off()
-
-#' get number of fish last detected at each main lake section
-last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout, section = section), delay_days = 30L)
-last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout, section = section), delay_days = 30L)
-
-last_bt %<>% group_by(Section) %>% summarise(Fish = n())
-last_rb %<>% group_by(Section) %>% summarise(Fish = n())
-
-#' save bull trout last detection sections to results
-saveRDS(last_bt, "results/last_bt.rds")
-#' save rainbow trout last detection sections to results
-saveRDS(last_rb, "results/last_rb.rds")
 
 #' define seasonal periods
 interval_period <- mutate(detect$interval, Season = season(Month),
