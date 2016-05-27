@@ -72,11 +72,14 @@ last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout)
 last_bt %<>% mutate(Season = season(Date))
 last_rb %<>% mutate(Season = season(Date))
 
+print(as.data.frame(last_bt))
+print(as.data.frame(last_rb))
+
 last_bt %<>% group_by(Section, Season) %>% summarise(Fish = n())
 last_rb %<>% group_by(Section, Season) %>% summarise(Fish = n())
 
-last_bt %<>% spread(Season, Fish, fill = 0)
-last_rb %<>% spread(Season, Fish, fill = 0)
+last_bt %<>% spread(Season, Fish, fill = 0, drop = FALSE)
+last_rb %<>% spread(Season, Fish, fill = 0, drop = FALSE)
 
 #' save bull trout last detection sections to results
 saveRDS(last_bt, "results/last_bt.rds")

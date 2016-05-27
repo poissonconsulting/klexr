@@ -39,7 +39,7 @@ summarise_results <- function(lex, detect, bull_trout, rainbow_trout) {
   captures_all_rb <- dplyr::filter_(captures_all, ~Species == "Rainbow Trout")
 
   lightest <- dplyr::filter_(captures_all, ~!is.na(Weight))
-  lightest <- captures_all[which.min(lightest$Weight),]
+  lightest <- lightest[which.min(lightest$Weight),]
 
   captures_bt <- jaggernaut::dataset(bull_trout) %>%
     dplyr::filter_(~Period == PeriodCapture)
