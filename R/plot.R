@@ -203,13 +203,13 @@ plot_mortality <- function(data1, data2, x, xlab = x, ylab = "Mortality") {
     Species = factor(1),
     estimate = c(0, 1),
     lower = c(0, 1),
-    upper = c(0, 1)), min_row = 2)
+    upper = c(0, 2)), min_row = 2)
 
   data2 %<>% check_data1(values = list(
     Species = factor(1),
     estimate = c(0, 1),
     lower = c(0, 1),
-    upper = c(0, 1)), min_row = 2)
+    upper = c(0, 2)), min_row = 2)
 
   data1 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))
   data2 %<>% dplyr::mutate_(.dots = list(Species = ~as.character(Species), Capture = ~NULL))

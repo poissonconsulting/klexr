@@ -55,6 +55,10 @@ model{
   dSDSurvivalSpawning <- iSurvivalSpawning * 3 + (1-iSurvivalSpawning) * 3 * dKC
   bSurvivalSpawning ~ dnorm(0, dSDSurvivalSpawning^-2)     # $\\beta_{\\phi \\kappa}$
 
+  iMovingYear ~ dbern(dKI)                               # $\\gamma_{\\delta Y}$
+  dSDMovingYear <- iMovingYear * 3 + (1-iMovingYear) * 3 * dKC
+  bMovingYear ~ dnorm(0, dSDMovingYear^-2)               # $\\beta_{\\delta Y}$
+
   iRecaptureYear ~ dbern(dKI)                              # $\\gamma_{\\rho Y}$
   dSDRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * dKC
   bRecaptureYear ~ dnorm(0, dSDRecaptureYear^-2)           # $\\beta_{\\rho Y}$
@@ -87,7 +91,7 @@ bSurvivalYear * Year[PeriodCapture[i]]
       logit(eSpawning[i,j]) <- bSpawning + bSpawningLength * Length[i,j]
       Spawned[i,j] ~ dbern(eAlive[i,j] *  SpawningPeriod[j] * eSpawning[i,j])
 
-      logit(eMoving[i,j]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[j]
+      logit(eMoving[i,j]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[j] + bMovingYear * Year[j]
       Moved[i,j] ~ dbern(eAlive[i,j] * Monitored[i,j] * eMoving[i,j])
 
       logit(eRecapture[i,j]) <- bRecapture + bRecaptureYear * Year[j]
@@ -108,7 +112,7 @@ survival_model <- function(model) {
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
-    logit(eMoving[i]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[i]
+    logit(eMoving[i]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[i] + bMovingYear * Year[i]
     logit(eRecapture[i]) <- bRecapture + bRecaptureYear * Year[i]
     logit(eSurvival[i]) <- bSurvival + bSurvivalSpawning * Spawned[i] + bSurvivalYear * Year[i]
 
@@ -118,7 +122,7 @@ derived_code = "data{
     eRecaptureAnnual[i] <- 1 - (1 - eRecapture[i])^4
     eSurvivalAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * Spawned[i] + eSurvivalNonspawner[i] * (1 - Spawned[i]))
     eSurvivalLengthAnnual[i] <- eSurvivalNonspawner[i]^3 * (eSurvivalSpawner[i] * eSpawning[i] + eSurvivalNonspawner[i] * (1 - eSpawning[i]))
-    eMortalityLengthAnnual[i] <- exp(-eSurvivalLengthAnnual[i])
+    eMortalityLengthAnnual[i] <- -log(eSurvivalLengthAnnual[i])
   }
 }",
              gen_inits = function(data) {

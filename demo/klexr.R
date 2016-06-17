@@ -107,7 +107,7 @@ interval_period %<>% factor(levels = unique(.))
 #' aggregate bull trout daily detections into monthly detections
 bull_trout %<>% make_analysis_data(
   detect, capture = ., interval_period = interval_period,
-  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.14
+  spawning = spawning_bt, growth = growth_vb, linf = 1000, k = 0.13
 )
 
 #' aggregate rainbow trout daily detections into monthly detections
@@ -175,7 +175,7 @@ pdf("results/traceplots_survival_rb.pdf")
 plot(survival_rb)
 dev.off()
 
-values = data_frame(Year = 2010L, Length = 650L, SpawningPeriod = FALSE, Spawned = FALSE)
+values = data_frame(Year = 2011L, Length = 650L, SpawningPeriod = FALSE, Spawned = FALSE)
 
 pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "SpawningPeriod", values = values)
