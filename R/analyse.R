@@ -63,6 +63,10 @@ model{
   dSDRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * dKC
   bRecaptureYear ~ dnorm(0, dSDRecaptureYear^-2)           # $\\beta_{\\rho Y}$
 
+  iSpawningYear ~ dbern(dKI)                              # $\\gamma_{\\kappa Y}$
+  dSDSpawningYear <- iSpawningYear * 3 + (1-iSpawningYear) * 3 * dKC
+  bSpawningYear ~ dnorm(0, dSDSpawningYear^-2)            # $\\beta_{\\kappa Y}$
+
   iSurvivalYear ~ dbern(dKI)                              # $\\gamma_{\\phi Y}$
   dSDSurvivalYear <- iSurvivalYear * 3 + (1-iSurvivalYear) * 3 * dKC
   bSurvivalYear ~ dnorm(0, dSDSurvivalYear^-2)            # $\\beta_{\\phi Y}$
@@ -70,7 +74,7 @@ model{
   for (i in 1:nCapture){
     eAlive[i,PeriodCapture[i]] <- 1
 
-    logit(eSpawning[i,PeriodCapture[i]]) <- bSpawning + bSpawningLength * Length[i,PeriodCapture[i]]
+    logit(eSpawning[i,PeriodCapture[i]]) <- bSpawning + bSpawningLength * Length[i,PeriodCapture[i]] + bSpawningYear * Year[PeriodCapture[i]]
 
     Spawned[i,PeriodCapture[i]] ~ dbern(eAlive[i,PeriodCapture[i]] * SpawningPeriod[PeriodCapture[i]] * eSpawning[i,PeriodCapture[i]])
 
@@ -88,7 +92,7 @@ bSurvivalYear * Year[PeriodCapture[i]]
     for(j in (PeriodCapture[i]+1):nPeriod) {
       eAlive[i,j] ~ dbern(eAlive[i,j-1] * eSurvival[i,j-1] * (1-Recaptured[i,j-1]))
 
-      logit(eSpawning[i,j]) <- bSpawning + bSpawningLength * Length[i,j]
+      logit(eSpawning[i,j]) <- bSpawning + bSpawningLength * Length[i,j] + bSpawningYear * Year[PeriodCapture[i]]
       Spawned[i,j] ~ dbern(eAlive[i,j] *  SpawningPeriod[j] * eSpawning[i,j])
 
       logit(eMoving[i,j]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[j] + bMovingYear * Year[j]
@@ -111,7 +115,7 @@ survival_model <- function(model) {
   jaggernaut::jags_model(survival_model_code(model = model),
 derived_code = "data{
   for(i in 1:length(Capture)) {
-    logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i]
+    logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i] + bSpawningYear * Year[i]
     logit(eMoving[i]) <- bMoving + bMovingSpawningPeriod * SpawningPeriod[i] + bMovingYear * Year[i]
     logit(eRecapture[i]) <- bRecapture + bRecaptureYear * Year[i]
     logit(eSurvival[i]) <- bSurvival + bSurvivalSpawning * Spawned[i] + bSurvivalYear * Year[i]
