@@ -99,6 +99,26 @@ png("results/use_rb.png", width = 3, height = 6, units = "in", res = getOption("
 plot_use_detect(filter_detect_data(detect, capture = rainbow_trout, section = section))
 dev.off()
 
+#' plot captures by color-coded section for Bull Trout
+png("results/capture_bt.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
+plot_capture(filter_detect_data(detect, capture = bull_trout, section = section))
+dev.off()
+
+#' plot captures by color-coded section for Rainbow Trout
+png("results/capture_rb.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
+plot_capture(filter_detect_data(detect, capture = rainbow_trout, section = section))
+dev.off()
+
+#' plot recaptures by color-coded section for Bull Trout
+png("results/recapture_bt.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
+plot_recapture(filter_detect_data(detect, capture = bull_trout, section = section))
+dev.off()
+
+#' plot recaptures by color-coded section for Rainbow Trout
+png("results/recapture_rb.png", width = 3, height = 6, units = "in", res = getOption("res", 150))
+plot_recapture(filter_detect_data(detect, capture = rainbow_trout, section = section))
+dev.off()
+
 #' define seasonal periods
 interval_period <- mutate(detect$interval, Season = season(Month),
                           Period = paste(Year, Season))$Period

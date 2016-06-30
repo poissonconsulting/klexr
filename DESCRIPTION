@@ -1,8 +1,8 @@
 Package: klexr
 Type: Package
 Title: Kootenay Lake Exploitation Analysis
-Version: 0.0.0.9005
-Date: 2016-05-12
+Version: 0.0.0.9006
+Date: 2016-06-29
 Authors@R: person("Joe",  "Thorley", email = "joe@poissonconsulting.ca", role = c("aut", "cre"))
 Description: The companion analysis package for Thorley et al.'s manuscript
     The Fishing and Natural Mortality
