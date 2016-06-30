@@ -137,9 +137,9 @@ plot_analysis_length <- function(data, years = 2008:2013) {
 plot_type <- function(data, x, xlab) {
   if (is.logical(data[[x]]) | is.factor(data[[x]])) {
     return(list(
-    ggplot2::geom_pointrange(ggplot2::aes_string(ymin = "lower", ymax = "upper"),
-                             position = ggplot2::position_dodge(width = 0.25)),
-    ggplot2::scale_x_discrete(name = xlab)))
+      ggplot2::geom_pointrange(ggplot2::aes_string(ymin = "lower", ymax = "upper"),
+                               position = ggplot2::position_dodge(width = 0.25)),
+      ggplot2::scale_x_discrete(name = xlab)))
   }
   list(ggplot2::geom_line(),
        ggplot2::geom_line(ggplot2::aes_string(y = "lower"), linetype = "dotted"),
@@ -222,5 +222,34 @@ plot_mortality <- function(data1, data2, x, xlab = x, ylab = "Mortality") {
     plot_type(data, x, xlab) +
     ggplot2::scale_y_continuous(name = ylab) +
     ggplot2::scale_color_manual(values = c("black", "red")) +
+    ggplot2::expand_limits(y = 0)
+}
+
+#' Plot Time Series
+#'
+#' Plots a time series
+#'
+#' @param data The first data to plot.
+#' @param y A string of the column to plot on the y-axis.
+#' @param x A string of the column to plot on the x-axis.
+#' @param xlab A string of the x-axis name.
+#' @param ylab A string of the y-axis name.
+#' @return A ggplot2 object.
+#' @export
+plot_timeseries <- function(data, y, x = "Year", ylab = y, xlab = x, from = 2008, to = 2013) {
+  check_string(y)
+  check_string(x)
+  check_string(ylab)
+  check_string(xlab)
+
+  ribbon <- dplyr::data_frame(xmin = from, xmax = to, ymin = 0, ymax = max(data[[y]], na.rm = TRUE) * 1.05)
+
+  ggplot2::ggplot(data = data) +
+    ggplot2::geom_rect(data = ribbon, fill = "grey66",
+                          ggplot2::aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax")) +
+    ggplot2::geom_line(ggplot2::aes_string(x = x, y = y)) +
+    ggplot2::geom_point( ggplot2::aes_string(x = x, y = y)) +
+    ggplot2::scale_x_continuous(name = xlab) +
+    ggplot2::scale_y_continuous(name = ylab, labels = scales::comma) +
     ggplot2::expand_limits(y = 0)
 }
