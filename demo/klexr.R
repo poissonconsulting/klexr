@@ -2,7 +2,7 @@
 #' title: "Kootenay Lake Exploitation Analysis"
 #' author: "Joe Thorley"
 #' ---
-#'
+
 #' ensure required packages are loaded
 library(stats)
 library(magrittr)
@@ -23,6 +23,7 @@ dir.create("results", showWarnings = FALSE, recursive = TRUE)
 #' load hourly detection dataset
 lex <- input_lex_data("klexdatr")
 
+#' merge sections
 lex %<>% combine_sections_lex_data(list("S01" = c("S01", "S05", "S06"),
                                         "S18" = c("S18", "S21")))
 
@@ -72,15 +73,18 @@ rainbow_trout <- filter(detect$capture, Species == "Rainbow Trout")
 last_bt <- last_section_data(filter_detect_data(detect, capture = bull_trout), delay_days = 120L)
 last_rb <- last_section_data(filter_detect_data(detect, capture = rainbow_trout), delay_days = 120L)
 
+#' add season to the data frame
 last_bt %<>% mutate(Season = season(Date))
 last_rb %<>% mutate(Season = season(Date))
 
 print(as.data.frame(last_bt))
 print(as.data.frame(last_rb))
 
+#' get fish by section and season
 last_bt %<>% group_by(Section, Season) %>% summarise(Fish = n())
 last_rb %<>% group_by(Section, Season) %>% summarise(Fish = n())
 
+#' convert from long to wide format
 last_bt %<>% spread(Season, Fish, fill = 0, drop = FALSE)
 last_rb %<>% spread(Season, Fish, fill = 0, drop = FALSE)
 
@@ -143,7 +147,7 @@ rainbow_trout %<>% make_analysis_data(
 bull_trout %<>% as.data.frame()
 rainbow_trout %<>% as.data.frame()
 
-# rename Reported as Recaptured and add Season column
+#' rename Reported as Recaptured and add Season column
 bull_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
 rainbow_trout %<>% rename(Recaptured = Reported) %>% mutate(Season = season(Month))
 
@@ -236,6 +240,20 @@ pred_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = "Spawned", v
 survival_spawning <- plot_probability(pred_bt, pred_rb, x = "Spawned", ylab = "Annual Survival (%)")
 png("results/survival_spawning.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 survival_spawning
+dev.off()
+
+pred_bt <- predict(survival_bt, parm = "eSpawning", newdata = "Year", values = mutate(values, Length = 800L))
+pred_rb <- predict(survival_rb, parm = "eSpawning", newdata = "Year", values = mutate(values, Length = 800L))
+spawning_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Spawning (%)")
+png("results/spawning_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
+spawning_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+dev.off()
+
+pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "Year", values = values)
+pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "Year", values = values)
+movement_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Seasonal Movement (%)")
+png("results/movement_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
+movement_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
