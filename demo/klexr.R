@@ -202,8 +202,10 @@ pdf("results/traceplots_survival_rb.pdf")
 plot(survival_rb)
 dev.off()
 
+#' set default values for plots
 values = data_frame(Year = 2011L, Length = 650L, SpawningPeriod = FALSE, Spawned = FALSE)
 
+#' plot probability of being detected moving between sections by spawning period
 pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 movement_spawningseason <- plot_probability(pred_bt, pred_rb, x = "SpawningPeriod", xlab = "Spawning Season", ylab = "Seasonal Movement (%)")
@@ -211,6 +213,7 @@ png("results/movement_spawningseason.png", width = 3, height = 2, units = "in", 
 movement_spawningseason
 dev.off()
 
+#' plot probability of spawning by fork length
 pred_bt <- predict(survival_bt, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 spawning_length <- plot_probability(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Spawning (%)")
@@ -218,6 +221,7 @@ png("results/spawning_length.png", width = 3, height = 2, units = "in", res = ge
 spawning_length
 dev.off()
 
+#' plot probability of being recaptured by year
 pred_bt <- predict(survival_bt, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 pred_rb <- predict(survival_rb, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 recapture_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Recapture (%)")
@@ -225,6 +229,7 @@ png("results/recapture_year.png", width = 3, height = 2, units = "in", res = get
 recapture_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
+#' plot probability of surviving by year
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Year", values = values)
 pred_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = "Year", values = values)
 pred_bt$Year %<>% factor()
@@ -235,6 +240,7 @@ png("results/survival_year.png", width = 3, height = 2, units = "in", res = getO
 survival_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
+#' plot probability of surviving by spawning
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 pred_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 survival_spawning <- plot_probability(pred_bt, pred_rb, x = "Spawned", ylab = "Annual Survival (%)")
@@ -242,6 +248,7 @@ png("results/survival_spawning.png", width = 3, height = 2, units = "in", res = 
 survival_spawning
 dev.off()
 
+#' plot probability of spawning by year
 pred_bt <- predict(survival_bt, parm = "eSpawning", newdata = "Year", values = mutate(values, Length = 800L))
 pred_rb <- predict(survival_rb, parm = "eSpawning", newdata = "Year", values = mutate(values, Length = 800L))
 spawning_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Spawning (%)")
@@ -249,6 +256,7 @@ png("results/spawning_year.png", width = 3, height = 2, units = "in", res = getO
 spawning_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
+#' plot probability of being detected moving by year
 pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "Year", values = values)
 pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "Year", values = values)
 movement_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Seasonal Movement (%)")
@@ -256,6 +264,7 @@ png("results/movement_year.png", width = 3, height = 2, units = "in", res = getO
 movement_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
+#' plot annual instantaneous natural mortality by fork length
 pred_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eMortalityLengthAnnual", data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 mortality_length <- plot_mortality(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Natural Mortality (M)")
