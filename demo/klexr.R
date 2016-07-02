@@ -218,7 +218,7 @@ pred_bt <- predict(survival_bt, parm = "eRecaptureAnnual", newdata = "Year", val
 pred_rb <- predict(survival_rb, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 recapture_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Recapture (%)")
 png("results/recapture_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
-recapture_year
+recapture_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Year", values = values)
@@ -228,7 +228,7 @@ pred_rb$Year %<>% factor()
 pred_bt %<>% filter(Year != "2008")
 survival_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Survival (%)")
 png("results/survival_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
-survival_year
+survival_year + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
