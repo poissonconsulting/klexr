@@ -203,21 +203,21 @@ values = data_frame(Year = 2011L, Length = 650L, SpawningPeriod = FALSE, Spawned
 pred_bt <- predict(survival_bt, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 pred_rb <- predict(survival_rb, parm = "eMoving", newdata = "SpawningPeriod", values = values)
 movement_spawningseason <- plot_probability(pred_bt, pred_rb, x = "SpawningPeriod", xlab = "Spawning Season", ylab = "Seasonal Movement (%)")
-png("results/movement_spawningseason.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/movement_spawningseason.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 movement_spawningseason
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eSpawning", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 spawning_length <- plot_probability(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Spawning (%)")
-png("results/spawning_length.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/spawning_length.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 spawning_length
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 pred_rb <- predict(survival_rb, parm = "eRecaptureAnnual", newdata = "Year", values = values)
 recapture_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Recapture (%)")
-png("results/recapture_year.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/recapture_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 recapture_year
 dev.off()
 
@@ -227,21 +227,21 @@ pred_bt$Year %<>% factor()
 pred_rb$Year %<>% factor()
 pred_bt %<>% filter(Year != "2008")
 survival_year <- plot_probability(pred_bt, pred_rb, x = "Year", ylab = "Annual Survival (%)")
-png("results/survival_year.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/survival_year.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 survival_year
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 pred_rb <- predict(survival_rb, parm = "eSurvivalAnnual", newdata = "Spawned", values = values)
 survival_spawning <- plot_probability(pred_bt, pred_rb, x = "Spawned", ylab = "Annual Survival (%)")
-png("results/survival_spawning.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/survival_spawning.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 survival_spawning
 dev.off()
 
 pred_bt <- predict(survival_bt, parm = "eMortalityLengthAnnual", newdata = data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 pred_rb <- predict(survival_rb, parm = "eMortalityLengthAnnual", data_frame(Length = seq(500L, 800L, by = 10L)), values = values)
 mortality_length <- plot_mortality(pred_bt, pred_rb, x = "Length", xlab = "Fork Length (mm)", ylab = "Natural Mortality (M)")
-png("results/mortality_length.png", width = 4, height = 3, units = "in", res = getOption("res", 150))
+png("results/mortality_length.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 mortality_length
 dev.off()
 
