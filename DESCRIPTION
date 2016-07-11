@@ -25,7 +25,7 @@ Imports:
     jaggernaut (>= 2.3.2),
     juggler,
     klexdatr (>= 0.0.5.9002),
-    kootlake (>= 0.0.1),
+    kootlake (>= 0.2.0),
     lexr (>= 0.0.8),
     lubridate,
     magrittr,

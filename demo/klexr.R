@@ -33,9 +33,14 @@ plot_section(lex)
 dev.off()
 
 #' plot a rainbow trout escapement at the outflow of trout lake
-gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08)
+gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08) %>% filter(Year %in% 1990:2016)
 png("results/gerrard.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
 plot_timeseries(gerrard, y = "Escapement", ylab = "Rainbow Trout Escapement")
+dev.off()
+
+kokanee <- mutate(kootlake::kokanee, Kokanee = MeadowCreek + Lardeau) %>% filter(Year %in% 1990:2016)
+png("results/kokanee.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
+plot_timeseries(kokanee, y = "Kokanee", ylab = "Kokanee Escapement")
 dev.off()
 
 #' aggregate hourly receiver detection data into daily sectional detections
