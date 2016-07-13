@@ -17,12 +17,12 @@ Then execute the following code at the R terminal:
       "klexdatr", "lexr")))
     library(klexr)
 
-Replication
------------
+Usage
+-----
 
 To quickly replicate the results with *unreliable* model estimates use:
 
-    replicate_results("debug")
+    replicate_results()
 
 This option is useful for testing everything is installed correctly.
 
