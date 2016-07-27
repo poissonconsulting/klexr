@@ -234,6 +234,8 @@ plot_mortality <- function(data1, data2, x, xlab = x, ylab = "Mortality") {
 #' @param x A string of the column to plot on the x-axis.
 #' @param xlab A string of the x-axis name.
 #' @param ylab A string of the y-axis name.
+#' @param from A count of the start year.
+#' @param to A count of the end year.
 #' @return A ggplot2 object.
 #' @export
 plot_timeseries <- function(data, y, x = "Year", ylab = y, xlab = x, from = 2008, to = 2013) {

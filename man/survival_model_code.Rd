@@ -4,10 +4,12 @@
 \alias{survival_model_code}
 \title{Survival Model Code}
 \usage{
-survival_model_code(model = "final", comments = TRUE)
+survival_model_code(model = "final", sd = 3, comments = TRUE)
 }
 \arguments{
 \item{model}{A string specifying the model type ("base", "full" and "final")}
+
+\item{sd}{A number specifying the standard deviation for the prior distributions.}
 
 \item{comments}{A flag indicating whether to include comments.}
 }

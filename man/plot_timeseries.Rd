@@ -17,6 +17,10 @@ plot_timeseries(data, y, x = "Year", ylab = y, xlab = x, from = 2008,
 \item{ylab}{A string of the y-axis name.}
 
 \item{xlab}{A string of the x-axis name.}
+
+\item{from}{A count of the start year.}
+
+\item{to}{A count of the end year.}
 }
 \value{
 A ggplot2 object.

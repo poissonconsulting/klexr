@@ -3,9 +3,9 @@
 #' @param x The numeric vector to transform.
 #' @export
 #' @examples
-#' subtract600divide100(c(400,500,600,750))
-subtract600divide100 <- function(x) {
-  x %<>% magrittr::subtract(600) %>% magrittr::divide_by(100)
+#' subtract700divide100(c(400,500,600,750))
+subtract700divide100 <- function(x) {
+  x %<>% magrittr::subtract(700) %>% magrittr::divide_by(100)
   x
 }
 
@@ -15,13 +15,15 @@ subtract600divide100 <- function(x) {
 #' defining the survival model.
 #'
 #' @param model A string specifying the model type ("base", "full" and "final")
+#' @param sd A number specifying the standard deviation for the prior distributions.
 #' @param comments A flag indicating whether to include comments.
 #' @return A string of the JAGS model code.
 #' @examples
 #' cat(survival_model_code())
 #' @export
-survival_model_code <- function(model = "final", comments = TRUE) {
+survival_model_code <- function(model = "final", sd = 3, comments = TRUE) {
   check_scalar(model, c("base", "full", "final"))
+  check_scalar(sd, c(1, 10))
   check_flag(comments)
 
   data <- list()
@@ -32,43 +34,41 @@ survival_model_code <- function(model = "final", comments = TRUE) {
          final = 0.5,
          stop())
 
-  model_code <- "
-data {
-  dKI <- {{dKI}}
-  dKC <- 10^-2
-}
-model{
-  bSpawning ~ dnorm(0, 3^-2)                              # $\\beta_{\\kappa 0}$
-  bMoving ~ dnorm(0, 3^-2)                                # $\\beta_{\\delta 0}$
-  bRecapture ~ dnorm(0, 3^-2)                             # $\\beta_{\\rho 0}$
-  bSurvival ~ dnorm(0, 3^-2)                              # $\\beta_{\\phi 0}$
+  data$sd <- sd
 
-  iSpawningLength ~ dbern(dKI)                             # $\\gamma_{\\kappa L}$
-  dSDSpawningLength <- iSpawningLength * 3 + (1-iSpawningLength) * 3 * dKC
+  model_code <- "
+model{
+  bSpawning ~ dnorm(0, {{sd}}^-2)                              # $\\beta_{\\kappa 0}$
+  bMoving ~ dnorm(0, {{sd}}^-2)                                # $\\beta_{\\delta 0}$
+  bRecapture ~ dnorm(0, {{sd}}^-2)                             # $\\beta_{\\rho 0}$
+  bSurvival ~ dnorm(0, {{sd}}^-2)                              # $\\beta_{\\phi 0}$
+
+  iSpawningLength ~ dbern({{dKI}})                             # $\\gamma_{\\kappa L}$
+  dSDSpawningLength <- iSpawningLength * {{sd}} + (1-iSpawningLength) * {{sd}} * 10^-2
   bSpawningLength ~ dnorm(0, dSDSpawningLength^-2)         # $\\beta_{\\kappa L}$
 
-  iMovingSpawningPeriod ~ dbern(dKI)                       # $\\gamma_{\\delta S}$
-  dSDMovingSpawningPeriod <- iMovingSpawningPeriod * 3 + (1-iMovingSpawningPeriod) * 3 * dKC
+  iMovingSpawningPeriod ~ dbern({{dKI}})                       # $\\gamma_{\\delta S}$
+  dSDMovingSpawningPeriod <- iMovingSpawningPeriod * {{sd}} + (1-iMovingSpawningPeriod) * {{sd}} * 10^-2
   bMovingSpawningPeriod ~ dnorm(0, dSDMovingSpawningPeriod^-2) # $\\beta_{\\delta S}$
 
-  iSurvivalSpawning ~ dbern(dKI)                           # $\\gamma_{\\phi \\kappa}$
-  dSDSurvivalSpawning <- iSurvivalSpawning * 3 + (1-iSurvivalSpawning) * 3 * dKC
+  iSurvivalSpawning ~ dbern({{dKI}})                           # $\\gamma_{\\phi \\kappa}$
+  dSDSurvivalSpawning <- iSurvivalSpawning * {{sd}} + (1-iSurvivalSpawning) * {{sd}} * 10^-2
   bSurvivalSpawning ~ dnorm(0, dSDSurvivalSpawning^-2)     # $\\beta_{\\phi \\kappa}$
 
-  iMovingYear ~ dbern(dKI)                               # $\\gamma_{\\delta Y}$
-  dSDMovingYear <- iMovingYear * 3 + (1-iMovingYear) * 3 * dKC
+  iMovingYear ~ dbern({{dKI}})                               # $\\gamma_{\\delta Y}$
+  dSDMovingYear <- iMovingYear * {{sd}} + (1-iMovingYear) * {{sd}} * 10^-2
   bMovingYear ~ dnorm(0, dSDMovingYear^-2)               # $\\beta_{\\delta Y}$
 
-  iRecaptureYear ~ dbern(dKI)                              # $\\gamma_{\\rho Y}$
-  dSDRecaptureYear <- iRecaptureYear * 3 + (1-iRecaptureYear) * 3 * dKC
+  iRecaptureYear ~ dbern({{dKI}})                              # $\\gamma_{\\rho Y}$
+  dSDRecaptureYear <- iRecaptureYear * {{sd}} + (1-iRecaptureYear) * {{sd}} * 10^-2
   bRecaptureYear ~ dnorm(0, dSDRecaptureYear^-2)           # $\\beta_{\\rho Y}$
 
-  iSpawningYear ~ dbern(dKI)                              # $\\gamma_{\\kappa Y}$
-  dSDSpawningYear <- iSpawningYear * 3 + (1-iSpawningYear) * 3 * dKC
+  iSpawningYear ~ dbern({{dKI}})                              # $\\gamma_{\\kappa Y}$
+  dSDSpawningYear <- iSpawningYear * {{sd}} + (1-iSpawningYear) * {{sd}} * 10^-2
   bSpawningYear ~ dnorm(0, dSDSpawningYear^-2)            # $\\beta_{\\kappa Y}$
 
-  iSurvivalYear ~ dbern(dKI)                              # $\\gamma_{\\phi Y}$
-  dSDSurvivalYear <- iSurvivalYear * 3 + (1-iSurvivalYear) * 3 * dKC
+  iSurvivalYear ~ dbern({{dKI}})                              # $\\gamma_{\\phi Y}$
+  dSDSurvivalYear <- iSurvivalYear * {{sd}} + (1-iSurvivalYear) * {{sd}} * 10^-2
   bSurvivalYear ~ dnorm(0, dSDSurvivalYear^-2)            # $\\beta_{\\phi Y}$
 
   for (i in 1:nCapture){
@@ -187,7 +187,7 @@ derived_code = "data{
              select_data = c("Capture", "PeriodCapture",
                              "Period", "Year*",
                              "Monitored", "Moved", "Recaptured",
-                             "Spawned", "SpawningPeriod", "subtract600divide100(Length)"),
+                             "Spawned", "SpawningPeriod", "subtract700divide100(Length)"),
 monitor = "^([^de]|.[^A-Z])"
   )
 }
