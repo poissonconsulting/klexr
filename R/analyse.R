@@ -3,9 +3,9 @@
 #' @param x The numeric vector to transform.
 #' @export
 #' @examples
-#' subtract700divide100(c(400,500,600,750))
-subtract700divide100 <- function(x) {
-  x %<>% magrittr::subtract(700) %>% magrittr::divide_by(100)
+#' subtract750(c(400,500,600,750))
+subtract750 <- function(x) {
+  x %<>% magrittr::subtract(750)
   x
 }
 
@@ -187,7 +187,7 @@ derived_code = "data{
              select_data = c("Capture", "PeriodCapture",
                              "Period", "Year*",
                              "Monitored", "Moved", "Recaptured",
-                             "Spawned", "SpawningPeriod", "subtract700divide100(Length)"),
+                             "Spawned", "SpawningPeriod", "subtract750(Length)"),
 monitor = "^([^de]|.[^A-Z])"
   )
 }
