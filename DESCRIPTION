@@ -1,10 +1,10 @@
 Package: klexr
 Type: Package
 Title: Kootenay Lake Exploitation Analysis
-Version: 0.0.1
-Date: 2016-08-02
+Version: 0.0.2
+Date: 2016-08-03
 Authors@R: person("Joe",  "Thorley", email = "joe@poissonconsulting.ca", role = c("aut", "cre"))
-Description: The companion analysis package for Thorley et al.'s manuscript
+Description: The companion analysis package for Thorley and Andrusak's manuscript
     The Fishing and Natural Mortality
     of Large Piscivorous Bull Trout and Rainbow Trout
     in Kootenay Lake, British Columbia (2008-2014).
@@ -22,10 +22,10 @@ Imports:
     dplyr,
     foreach,
     ggplot2,
-    jaggernaut (>= 2.4.0),
+    jaggernaut (>= 2.4.1),
     juggler,
     klexdatr (>= 0.0.6),
-    kootlake (>= 0.2.0),
+    kootlake (>= 0.2.1),
     lexr (>= 0.0.9),
     lubridate,
     magrittr,
@@ -36,4 +36,10 @@ Imports:
     tidyr,
     utils,
     whisker
+Remotes:
+    poissonconsulting/juggler,
+    poissonconsulting/jaggernaut,
+    poissonconsulting/klexdatr,
+    poissonconsulting/kootlake,
+    poissonconsulting/lexr
 RoxygenNote: 5.0.1
