@@ -1,0 +1,17 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+sudo: false
+cache: packages
+
+r_binary_packages:
+ - rjags
+
+r_github_packages:
+ - poissonconsulting/tulip
+ - poissonconsulting/datalist
+ - poissonconsulting/juggler
+ - poissonconsulting/jaggernaut
+ - poissonconsulting/kootlake
+ - poissonconsulting/klexdatr
+ - poissonconsulting/lexr

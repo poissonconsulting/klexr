@@ -324,3 +324,12 @@ summary(tagloss_rb)
 pdf("results/traceplots_tagloss_rb.pdf")
 plot(tagloss_rb)
 dev.off()
+
+#' test sensitivity of posteriors to priors
+survival_bt2 <- analyse_survival(bull_trout, sd = 6, model = "final")
+rhat_bt2 <- convergence_analyses(survival_bt, survival_bt2)
+saveRDS(rhat_bt2, "results/rhat_bt2.rds")
+
+survival_rb2 <- analyse_survival(rainbow_trout, sd = 6, model = "final")
+rhat_rb2 <- convergence_analyses(survival_rb, survival_rb2)
+saveRDS(rhat_rb2, "results/rhat_rb2.rds")

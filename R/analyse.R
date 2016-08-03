@@ -44,31 +44,31 @@ model{
   bSurvival ~ dnorm(0, {{sd}}^-2)                              # $\\beta_{\\phi 0}$
 
   iSpawningLength ~ dbern({{dKI}})                             # $\\gamma_{\\kappa L}$
-  dSDSpawningLength <- iSpawningLength * {{sd}} + (1-iSpawningLength) * {{sd}} * 10^-2
+  dSDSpawningLength <- iSpawningLength * {{sd}} + (1-iSpawningLength) * 0.03
   bSpawningLength ~ dnorm(0, dSDSpawningLength^-2)         # $\\beta_{\\kappa L}$
 
   iMovingSpawningPeriod ~ dbern({{dKI}})                       # $\\gamma_{\\delta S}$
-  dSDMovingSpawningPeriod <- iMovingSpawningPeriod * {{sd}} + (1-iMovingSpawningPeriod) * {{sd}} * 10^-2
+  dSDMovingSpawningPeriod <- iMovingSpawningPeriod * {{sd}} + (1-iMovingSpawningPeriod) * 0.03
   bMovingSpawningPeriod ~ dnorm(0, dSDMovingSpawningPeriod^-2) # $\\beta_{\\delta S}$
 
   iSurvivalSpawning ~ dbern({{dKI}})                           # $\\gamma_{\\phi \\kappa}$
-  dSDSurvivalSpawning <- iSurvivalSpawning * {{sd}} + (1-iSurvivalSpawning) * {{sd}} * 10^-2
+  dSDSurvivalSpawning <- iSurvivalSpawning * {{sd}} + (1-iSurvivalSpawning) * 0.03
   bSurvivalSpawning ~ dnorm(0, dSDSurvivalSpawning^-2)     # $\\beta_{\\phi \\kappa}$
 
   iMovingYear ~ dbern({{dKI}})                               # $\\gamma_{\\delta Y}$
-  dSDMovingYear <- iMovingYear * {{sd}} + (1-iMovingYear) * {{sd}} * 10^-2
+  dSDMovingYear <- iMovingYear * {{sd}} + (1-iMovingYear) * 0.03
   bMovingYear ~ dnorm(0, dSDMovingYear^-2)               # $\\beta_{\\delta Y}$
 
   iRecaptureYear ~ dbern({{dKI}})                              # $\\gamma_{\\rho Y}$
-  dSDRecaptureYear <- iRecaptureYear * {{sd}} + (1-iRecaptureYear) * {{sd}} * 10^-2
+  dSDRecaptureYear <- iRecaptureYear * {{sd}} + (1-iRecaptureYear) * 0.03
   bRecaptureYear ~ dnorm(0, dSDRecaptureYear^-2)           # $\\beta_{\\rho Y}$
 
   iSpawningYear ~ dbern({{dKI}})                              # $\\gamma_{\\kappa Y}$
-  dSDSpawningYear <- iSpawningYear * {{sd}} + (1-iSpawningYear) * {{sd}} * 10^-2
+  dSDSpawningYear <- iSpawningYear * {{sd}} + (1-iSpawningYear) * 0.03
   bSpawningYear ~ dnorm(0, dSDSpawningYear^-2)            # $\\beta_{\\kappa Y}$
 
   iSurvivalYear ~ dbern({{dKI}})                              # $\\gamma_{\\phi Y}$
-  dSDSurvivalYear <- iSurvivalYear * {{sd}} + (1-iSurvivalYear) * {{sd}} * 10^-2
+  dSDSurvivalYear <- iSurvivalYear * {{sd}} + (1-iSurvivalYear) * 0.03
   bSurvivalYear ~ dnorm(0, dSDSurvivalYear^-2)            # $\\beta_{\\phi Y}$
 
   for (i in 1:nCapture){
@@ -110,9 +110,9 @@ bSurvivalYear * Year[j]
   ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
 }
 
-survival_model <- function(model) {
+survival_model <- function(model, sd) {
 
-  jaggernaut::jags_model(survival_model_code(model = model),
+  jaggernaut::jags_model(survival_model_code(model = model, sd = sd),
 derived_code = "data{
   for(i in 1:length(Capture)) {
     logit(eSpawning[i]) <- bSpawning + bSpawningLength * Length[i] + bSpawningYear * Year[i]
@@ -205,12 +205,13 @@ monitor = "^([^de]|.[^A-Z])"
 #'
 #' @param data A \code{analysis_data} object of the detection and recapture data to analyse.
 #' @param model A string specifying the model type ("base", "full" and "final")
+#' @param sd A number specifying the standard deviation for the prior distributions.
 #' @param niters An integer of the minimum number of MCMC iterations to
 #' perform.
 #' @param mode A character element indicating the mode for the analysis.
 #' @return A jags_analysis object.
 #' @export
-analyse_survival <- function(data, model = "final", niters = 10^5, mode = "current") {
+analyse_survival <- function(data, model = "final", sd = 3, niters = 10^5, mode = "current") {
   assert_that(is.data.frame(data))
   assert_that(is.count(niters) && noNA(niters))
 
@@ -240,7 +241,7 @@ analyse_survival <- function(data, model = "final", niters = 10^5, mode = "curre
       Spawned = c(TRUE, NA)),
     key = c("Capture", "Period"), select = TRUE)
 
-  jaggernaut::jags_analysis(survival_model(model = model),
+  jaggernaut::jags_analysis(survival_model(model = model, sd = sd),
                             data, niters = niters, mode = mode)
 }
 

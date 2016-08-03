@@ -2,10 +2,8 @@
 ^\.Rproj\.user$
 
 ^\.travis\.yml$
-
 ^README\.Rmd$
 ^README-.*\.png$
-
 ^results$
 ^klexr.html$
 ^logos.gif$
