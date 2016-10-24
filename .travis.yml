@@ -6,12 +6,3 @@ cache: packages
 
 r_binary_packages:
  - rjags
-
-r_github_packages:
- - poissonconsulting/tulip
- - poissonconsulting/datalist
- - poissonconsulting/juggler
- - poissonconsulting/jaggernaut
- - poissonconsulting/kootlake
- - poissonconsulting/klexdatr
- - poissonconsulting/lexr
