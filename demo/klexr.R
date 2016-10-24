@@ -7,13 +7,15 @@
 library(stats)
 library(magrittr)
 library(tidyr)
-library(dplyr)
 library(jaggernaut)
 library(ggplot2)
 library(scales)
+
 library(lexr)
 library(klexr)
 library(kootlake)
+
+library(dplyr)
 
 #' for additional information on a function enter: ?function_name
 
@@ -32,15 +34,34 @@ png("results/area.png", width = 3, height = 6, units = "in", res = getOption("re
 plot_section(lex)
 dev.off()
 
-#' plot a rainbow trout escapement at the outflow of trout lake
-gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08) %>% filter(Year %in% 1990:2016)
-png("results/gerrard.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
-plot_timeseries(gerrard, y = "Escapement", ylab = "Rainbow Trout Escapement")
-dev.off()
+#' plot rainbow trout and kokanee escapement
+gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08,
+                  Species = "Rainbow Trout") %>% select(Species, Year, Escapement) %>%
+  filter(Year %in% 1990:2016)
+kokanee <- mutate(kootlake::kokanee, Escapement = MeadowCreek + Lardeau,
+                  Species = "Kokanee") %>% select(Species, Year, Escapement) %>%
+  filter(Year %in% 1990:2016)
 
-kokanee <- mutate(kootlake::kokanee, Kokanee = MeadowCreek + Lardeau) %>% filter(Year %in% 1990:2016)
-png("results/kokanee.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
-plot_timeseries(kokanee, y = "Kokanee", ylab = "Kokanee Escapement")
+multiplier <- max(kokanee$Escapement) / max(gerrard$Escapement)
+
+kokanee$Escapement %<>% divide_by(multiplier)
+
+escapement <- bind_rows(kokanee, gerrard)
+
+png("results/escapement.png", width = 5, height = 2, units = "in", res = getOption("res", 150))
+
+ggplot(data = escapement) +
+  geom_rect(data = data_frame(xmin = 2008, xmax = 2013, ymin = 0,
+                              ymax = max(escapement$Escapement, na.rm = TRUE) * 1.05),
+            fill = "grey66", aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+  geom_line(aes(x = Year, y = Escapement, color = Species, group = Species)) +
+  geom_point(aes(x = Year, y = Escapement, color = Species, group = Species)) +
+  scale_x_continuous(breaks = seq(1990,2015,by = 5)) +
+  scale_color_manual(values = c("red", "blue")) +
+scale_y_continuous(name = "Rainbow Trout Escapement", labels = comma,
+                   sec.axis = sec_axis(~.* multiplier, name = "Kokanee Escapement", labels = derive())) +
+  expand_limits(y = 0, x = c(1990, 2016))
+
 dev.off()
 
 #' aggregate hourly receiver detection data into daily sectional detections
