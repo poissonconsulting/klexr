@@ -250,7 +250,7 @@ plot_timeseries <- function(data, y, x = "Year", ylab = y, xlab = x, from = 2008
     ggplot2::geom_rect(data = ribbon, fill = "grey66",
                           ggplot2::aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax")) +
     ggplot2::geom_line(ggplot2::aes_string(x = x, y = y)) +
-    ggplot2::geom_point( ggplot2::aes_string(x = x, y = y)) +
+    ggplot2::geom_point(ggplot2::aes_string(x = x, y = y)) +
     ggplot2::scale_x_continuous(name = xlab, breaks = seq(1990,2015,by = 5)) +
     ggplot2::scale_y_continuous(name = ylab, labels = scales::comma) +
     ggplot2::expand_limits(y = 0, x = c(1990, 2016))
