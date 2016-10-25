@@ -107,7 +107,7 @@ bSurvivalYear * Year[j]
 }"
   model_code %<>%  whisker::whisker.render(data)
 
-  ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
+  ifelse(!comments, jaggernaut::jg_rm_comments(model_code), model_code)
 }
 
 survival_model <- function(model, sd) {
@@ -267,7 +267,7 @@ model{
     Tags[i] ~ dbin(1 - bTagLoss, 2) T(1, )
   }
 }"
-  ifelse(!comments, juggler::jg_rm_comments(model_code), model_code)
+  ifelse(!comments, jaggernaut::jg_rm_comments(model_code), model_code)
 }
 
 tagloss_model <- function() {

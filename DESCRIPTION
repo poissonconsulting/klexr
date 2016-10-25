@@ -23,10 +23,9 @@ Imports:
     foreach,
     ggplot2 (>= 2.1.0.9001),
     jaggernaut (>= 2.4.1),
-    juggler,
-    klexdatr (>= 0.0.6),
-    kootlake (>= 0.2.2),
-    lexr (>= 0.0.9),
+    klexdatr (>= 0.0.7),
+    kootlake (>= 0.2.3),
+    lexr (>= 0.0.10),
     lubridate,
     magrittr,
     plyr,
@@ -38,9 +37,8 @@ Imports:
     whisker
 Remotes:
     hadley/ggplot2,
-    poissonconsulting/juggler,
-    poissonconsulting/jaggernaut,
-    poissonconsulting/klexdatr,
-    poissonconsulting/kootlake,
-    poissonconsulting/lexr
+    poissonconsulting/jaggernaut@v2.5.1,
+    poissonconsulting/klexdatr@v0.0.7,
+    poissonconsulting/kootlake@v0.2.3,
+    poissonconsulting/lexr@v0.0.10
 RoxygenNote: 5.0.1
