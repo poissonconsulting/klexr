@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 [![Travis-CI Build Status](https://travis-ci.org/poissonconsulting/klexr.svg?branch=master)](https://travis-ci.org/poissonconsulting/klexr)
+[![DOI](https://zenodo.org/badge/54237636.svg)](https://zenodo.org/badge/latestdoi/54237636)
 
 # Kootenay Lake Exploitation Analysis
 

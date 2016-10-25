@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/poissonconsulting/klexr.svg?branch=master)](https://travis-ci.org/poissonconsulting/klexr)
+[![Travis-CI Build Status](https://travis-ci.org/poissonconsulting/klexr.svg?branch=master)](https://travis-ci.org/poissonconsulting/klexr) [![DOI](https://zenodo.org/badge/54237636.svg)](https://zenodo.org/badge/latestdoi/54237636)
 
 Kootenay Lake Exploitation Analysis
 ===================================
@@ -13,10 +13,8 @@ To use the `klexr` package first install [R](http://cran.r-project.org) (version
 
 Then execute the following code at the R terminal:
 
-    #install.packages("devtools")
-    devtools::install_github(paste("poissonconsulting", sep = "/", c(
-      "tulip@v0.0.13", "datalist@v0.5.0", "juggler@v0.1.5", "jaggernaut@v2.3.1",
-      "klexdatr", "lexr")))
+    install.packages("devtools") # if not already installed
+    devtools::install_github("poissonconsulting/klexr")
     library(klexr)
 
 Usage
