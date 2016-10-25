@@ -5,7 +5,7 @@
 \title{Plot Time Series}
 \usage{
 plot_timeseries(data, y, x = "Year", ylab = y, xlab = x, from = 2008,
-  to = 2013)
+  to = 2013, color = "black")
 }
 \arguments{
 \item{data}{The first data to plot.}
@@ -21,6 +21,8 @@ plot_timeseries(data, y, x = "Year", ylab = y, xlab = x, from = 2008,
 \item{from}{A count of the start year.}
 
 \item{to}{A count of the end year.}
+
+\item{color}{A string of the color.}
 }
 \value{
 A ggplot2 object.

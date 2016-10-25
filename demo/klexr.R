@@ -37,10 +37,10 @@ dev.off()
 #' plot rainbow trout and kokanee escapement
 gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08,
                   Species = "Rainbow Trout", Length = NA) %>% select(Species, Year, Escapement) %>%
-  filter(Year %in% 1990:2016)
+  filter(Year %in% 1990:2015)
 kokanee <- mutate(kootlake::kokanee, Escapement = MeadowCreek + Lardeau,
                   Species = "Kokanee", Length = (LengthMale + LengthFemale) / 2) %>% select(Species, Year, Escapement, Length) %>%
-  filter(Year %in% 1990:2016)
+  filter(Year %in% 1990:2015)
 
 multiplier <- max(kokanee$Escapement) / max(gerrard$Escapement)
 
@@ -60,12 +60,12 @@ ggplot(data = escapement) +
   scale_color_manual(values = c("red", "blue")) +
 scale_y_continuous(name = "Rainbow Trout Escapement", labels = comma,
                    sec.axis = sec_axis(~.* multiplier, name = "Kokanee Escapement", labels = derive())) +
-  expand_limits(y = 0, x = c(1990, 2016))
+  expand_limits(y = 0, x = c(1990, 2015))
 
 dev.off()
 
 png("results/length.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
-plot_timeseries(filter(escapement, Species == "Kokanee"), y = "Length", ylab = "Fork Length (mm)")
+plot_timeseries(filter(escapement, Species == "Kokanee"), y = "Length", ylab = "Kokanee Fork Length (mm)", color = "blue")
 dev.off()
 
 #' aggregate hourly receiver detection data into daily sectional detections
