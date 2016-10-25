@@ -1,7 +1,7 @@
 Package: klexr
 Type: Package
 Title: Kootenay Lake Exploitation Analysis
-Version: 0.0.4
+Version: 0.0.5
 Date: 2016-10-24
 Authors@R: person("Joe",  "Thorley", email = "joe@poissonconsulting.ca", role = c("aut", "cre"))
 Description: The companion analysis package for Thorley and Andrusak's manuscript
@@ -21,11 +21,11 @@ Imports:
     doParallel,
     dplyr,
     foreach,
-    ggplot2 (>= 2.1.0.9001),
-    jaggernaut (>= 2.4.1),
+    ggplot2,
+    jaggernaut (>= 2.5.1),
     klexdatr (>= 0.0.7),
     kootlake (>= 0.2.3),
-    lexr (>= 0.0.10),
+    lexr (>= 0.0.11),
     lubridate,
     magrittr,
     plyr,
@@ -36,9 +36,8 @@ Imports:
     utils,
     whisker
 Remotes:
-    hadley/ggplot2,
     poissonconsulting/jaggernaut@v2.5.1,
     poissonconsulting/klexdatr@v0.0.7,
     poissonconsulting/kootlake@v0.2.3,
-    poissonconsulting/lexr@v0.0.10
+    poissonconsulting/lexr@v0.0.11
 RoxygenNote: 5.0.1

@@ -42,7 +42,7 @@ kokanee <- mutate(kootlake::kokanee, Escapement = MeadowCreek + Lardeau,
                   Species = "Kokanee", Length = (LengthMale + LengthFemale) / 2) %>% select(Species, Year, Escapement, Length) %>%
   filter(Year %in% 1990:2015)
 
-multiplier <- max(kokanee$Escapement) / max(gerrard$Escapement)
+multiplier <- 1000 #max(kokanee$Escapement) / max(gerrard$Escapement)
 
 kokanee$Escapement %<>% divide_by(multiplier)
 
@@ -58,8 +58,7 @@ ggplot(data = escapement) +
   geom_point(aes(x = Year, y = Escapement, color = Species, group = Species)) +
   scale_x_continuous(breaks = seq(1990,2015,by = 5)) +
   scale_color_manual(values = c("red", "blue")) +
-scale_y_continuous(name = "Rainbow Trout Escapement", labels = comma,
-                   sec.axis = sec_axis(~.* multiplier, name = "Kokanee Escapement", labels = derive())) +
+scale_y_continuous(name = "Escapement", labels = comma) +
   expand_limits(y = 0, x = c(1990, 2015))
 
 dev.off()
