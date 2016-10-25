@@ -4,6 +4,7 @@ dist: trusty
 
 r_binary_packages:
  - rgeos
+ - rjags
 
 addons:
   apt:
