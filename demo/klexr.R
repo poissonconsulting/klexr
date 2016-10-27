@@ -57,7 +57,7 @@ ggplot(data = escapement) +
   geom_line(aes(x = Year, y = Escapement, color = Species, group = Species)) +
   geom_point(aes(x = Year, y = Escapement, color = Species, group = Species)) +
   scale_x_continuous(breaks = seq(1990,2015,by = 5)) +
-  scale_color_manual(values = c("red", "blue")) +
+  scale_color_manual(values = c("blue", "red")) +
 scale_y_continuous(name = "Escapement", labels = comma) +
   expand_limits(y = 0, x = c(1990, 2015))
 
