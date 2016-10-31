@@ -1,8 +1,8 @@
 Package: klexr
 Type: Package
 Title: Kootenay Lake Exploitation Analysis
-Version: 0.0.6
-Date: 2016-10-28
+Version: 0.0.7
+Date: 2016-10-31
 Authors@R: person("Joe",  "Thorley", email = "joe@poissonconsulting.ca", role = c("aut", "cre"))
 Description: The companion analysis package for Thorley and Andrusak's manuscript
     The Fishing and Natural Mortality
@@ -24,7 +24,7 @@ Imports:
     ggplot2,
     jaggernaut (>= 2.5.1),
     klexdatr (>= 0.0.7),
-    kootlake (>= 0.2.3),
+    kootlake (>= 0.2.5),
     lexr (>= 0.0.11),
     lubridate,
     magrittr,
@@ -38,6 +38,6 @@ Imports:
 Remotes:
     poissonconsulting/jaggernaut@v2.5.1,
     poissonconsulting/klexdatr@v0.0.7,
-    poissonconsulting/kootlake@v0.2.3,
+    poissonconsulting/kootlake@v0.2.5,
     poissonconsulting/lexr@v0.0.11
 RoxygenNote: 5.0.1

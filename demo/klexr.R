@@ -67,6 +67,12 @@ png("results/length.png", width = 3, height = 2, units = "in", res = getOption("
 plot_timeseries(filter(escapement, Species == "Kokanee"), y = "Length", ylab = "Kokanee Fork Length (mm)", color = "blue")
 dev.off()
 
+fishery <- kootlake::fishery
+
+png("results/klrt.png", width = 3, height = 2, units = "in", res = getOption("res", 150))
+plot_timeseries(fishery, y = "AnglerHours", ylab = "Effort (angler hours)", color = "red")
+dev.off()
+
 #' aggregate hourly receiver detection data into daily sectional detections
 #' keep captures with a fork length of 500 or more with a $100 reward tag
 #' drop mortalities within 30 days of release
