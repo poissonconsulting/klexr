@@ -35,7 +35,7 @@ plot_section(lex)
 dev.off()
 
 #' plot rainbow trout and kokanee escapement
-gerrard <- mutate(kootlake::gerrard, Escapement = PeakCount * 3.08,
+gerrard <- mutate(kootlake::gerrard, Escapement = FishDays / 7,
                   Species = "Rainbow Trout", Length = NA) %>% select(Species, Year, Escapement) %>%
   filter(Year %in% 1990:2015)
 kokanee <- mutate(kootlake::kokanee, Escapement = MeadowCreek + Lardeau,
