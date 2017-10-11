@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/poissonconsulting/klexr.svg?branch=master)](https://travis-ci.org/poissonconsulting/klexr) [![DOI](https://zenodo.org/badge/54237636.svg)](https://zenodo.org/badge/latestdoi/54237636)
+[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/joethorley/stability-badges#deprecated) [![DOI](https://zenodo.org/badge/54237636.svg)](https://zenodo.org/badge/latestdoi/54237636)
 
 Kootenay Lake Exploitation Analysis
 ===================================
